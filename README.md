@@ -5,6 +5,52 @@ Everything to deploy V1 on Google Cloud (Cloud Run + Firestore). The exam is
 marks upload, and results-with-slices. No SMS/OTP — adults use Google login,
 students use a username (read-only, PII-free).
 
+The FastAPI service also serves the single-page frontend (`frontend/index.html`)
+same-origin, so the whole product runs as **one Cloud Run service**.
+
+---
+
+## ✅ Live deployment
+
+| Thing | Value |
+|---|---|
+| **App URL** | https://udaan-api-md45haetfq-el.a.run.app |
+| GCP project | `udaan-platform-260701` (region `asia-south1`) |
+| Firestore | Native, `asia-south1` (seeded: 1 exam, 2 centres, 10 papers, admin allowlist) |
+| Sample-papers bucket | `gs://udaan-platform-260701-udaan-papers` (public) |
+| Image | `asia-south1-docker.pkg.dev/udaan-platform-260701/udaan/udaan-api` |
+| Budget alert | $25/mo (50/90/100% thresholds) |
+
+Public pages work now (home, sample papers, student result lookup, leaderboard).
+
+### ⚠️ One manual step to enable Google sign-in (register / adult / admin)
+
+`GOOGLE_CLIENT_ID` is currently empty, so "Sign in with Google" is disabled.
+Google does not expose an API to create web OAuth clients, so do this once in
+the Console:
+
+1. **APIs & Services → OAuth consent screen** → External → fill app name +
+   support email → add yourself under *Test users* (or Publish).
+2. **APIs & Services → Credentials → Create credentials → OAuth client ID →
+   Web application.**
+   - **Authorized JavaScript origins:** `https://udaan-api-md45haetfq-el.a.run.app`
+   - (No redirect URI needed — we verify the ID token, not a code exchange.)
+3. Copy the **Client ID** and plug it in (no rebuild, ~30s redeploy):
+
+```bash
+gcloud run services update udaan-api --region asia-south1 \
+  --update-env-vars GOOGLE_CLIENT_ID=YOUR_CLIENT_ID.apps.googleusercontent.com
+```
+
+That's it — sign-in then works everywhere. The admin console is gated to the
+email(s) in Firestore `admins/*` (seeded via `ADMIN_EMAILS`).
+
+> **Health checks:** point uptime monitors at `/api/config` (returns 200).
+> Google's edge returns a 404 for extensionless paths like `/healthz`, but every
+> real route (`/`, `/api/*`) is unaffected.
+
+---
+
 > You run these commands. Claude can't reach your GCP project. Use your own
 > machine or **Cloud Shell** (has `gcloud` + auth already).
 
