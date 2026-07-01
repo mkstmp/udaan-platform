@@ -1,0 +1,6 @@
+.git/
+sample_papers/
+*.md
+scripts/
+firestore/
+udaan-*.html

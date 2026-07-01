@@ -1,0 +1,6 @@
+.git
+sample_papers
+scripts
+firestore
+*.md
+**/__pycache__

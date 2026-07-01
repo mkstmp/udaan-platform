@@ -1,0 +1,51 @@
+rules_version = '2';
+
+// Udaan — Firestore security rules
+// Principle: ALL writes go through the FastAPI backend (Cloud Run service account,
+// which bypasses these rules via Admin SDK). Clients get NO direct write access,
+// and NO direct read access to collections that contain PII.
+//
+// The student read-view and admit card are served by backend endpoints that return
+// a field-allowlisted, PII-free payload — clients never read students/* directly.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default: deny everything. Backend Admin SDK is unaffected by rules.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Public, non-PII reference data that the frontend may read directly.
+    // (You may instead serve these via backend endpoints; direct read is fine
+    //  because they contain no personal data.)
+    match /exams/{examId} {
+      allow read: if resource.data.status in ['open', 'closed', 'completed'];
+      allow write: if false;
+    }
+
+    match /sample_papers/{paperId} {
+      allow read: if resource.data.active == true;
+      allow write: if false;
+    }
+
+    // Public leaderboard entries (already public info: name, class, score, ranks).
+    // These are DENORMALIZED docs the backend writes at publish time — they must
+    // contain NO PII (no dob, phone, school, village). Kept in a separate
+    // collection so a public read here can never touch the students/* PII.
+    match /leaderboard/{entryId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Everything below contains PII and is BACKEND-ONLY (no client access at all):
+    //   students/*, registrations/*, adults/*, centers/*, admins/*, audit_logs/*
+    // The default deny above already covers them; listed here for clarity.
+    match /students/{id}       { allow read, write: if false; }
+    match /registrations/{id}  { allow read, write: if false; }
+    match /adults/{id}         { allow read, write: if false; }
+    match /centers/{id}        { allow read, write: if false; }
+    match /admins/{id}         { allow read, write: if false; }
+    match /audit_logs/{id}     { allow read, write: if false; }
+  }
+}

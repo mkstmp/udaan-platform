@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/mukesh/Downloads/**)",
+      "Bash(gcloud --version)",
+      "Bash(gh auth *)",
+      "Bash(gcloud auth *)",
+      "Bash(python3 -c \"import sys; print\\(sys.version\\)\")",
+      "Bash(python3 -c \"import fastapi, google.cloud.firestore\")",
+      "Bash(python3 -m py_compile backend/app/*.py scripts/seed_firestore.py)",
+      "Bash(python3 -c \"import json;json.load\\(open\\('firestore/firestore.indexes.json'\\)\\);print\\('INDEXES_JSON_OK'\\)\")",
+      "Bash(python3 -c ' *)",
+      "Bash(node --check /private/tmp/claude-501/-Users-mukesh-Downloads-udaan-deploy/213d361b-411e-4904-b7be-b482adc2ff2c/scratchpad/app.js)",
+      "Bash(gcloud config *)",
+      "Bash(gcloud services *)",
+      "Bash(gcloud builds *)",
+      "Bash(curl -s -o /dev/null -w '%{http_code}\\\\n' https://udaan-api-md45haetfq-el.a.run.app/healthz)",
+      "Bash(curl -s https://udaan-api-md45haetfq-el.a.run.app/healthz)",
+      "Bash(curl -sI https://udaan-api-md45haetfq-el.a.run.app/healthz)",
+      "Bash(gcloud run *)",
+      "Bash(curl -sv https://udaan-api-md45haetfq-el.a.run.app/healthz)",
+      "Bash(env)",
+      "WebFetch(domain:udaan-api-md45haetfq-el.a.run.app)",
+      "Bash(export GOOGLE_CLOUD_PROJECT=\"udaan-platform-260701\")",
+      "Bash(python3 -c \"import google.cloud.firestore; print\\('firestore lib OK'\\)\")",
+      "Bash(export SAMPLE_PAPERS_BUCKET=\"udaan-platform-260701-udaan-papers\")",
+      "Bash(python3 scripts/seed_firestore.py)",
+      "Bash(firebase deploy *)",
+      "Bash(curl -s https://udaan-api-md45haetfq-el.a.run.app/api/exams)",
+      "Bash(python3 -m json.tool)",
+      "Bash(git init *)",
+      "Bash(git add *)",
+      "Bash(git -c user.email=mukesh.sonepur@gmail.com -c user.name=Mukesh commit -q -m 'Udaan V1: FastAPI backend + wired SPA frontend + GCP deploy kit *)"
+    ]
+  }
+}
