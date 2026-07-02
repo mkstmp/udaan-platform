@@ -45,7 +45,16 @@
       "Bash(curl -s -o /dev/null -w '%{http_code}\\\\n' -H 'Authorization: Bearer not-a-real-token' https://udaan-platform-260701.web.app/api/adult/students)",
       "Bash(curl -s -H 'Authorization: Bearer not-a-real-token' https://udaan-platform-260701.web.app/api/adult/students)",
       "Bash(git -c user.email=mukesh.sonepur@gmail.com -c user.name=Mukesh commit -q -m 'Google sign-in configured \\(GOOGLE_CLIENT_ID set on Cloud Run\\) *)",
-      "Bash(git -c user.email=mukesh.sonepur@gmail.com -c user.name=Mukesh commit -q -m 'Fix: seg-button clicks no longer clear typed text in registration form *)"
+      "Bash(git -c user.email=mukesh.sonepur@gmail.com -c user.name=Mukesh commit -q -m 'Fix: seg-button clicks no longer clear typed text in registration form *)",
+      "Bash(rm -rf bihar_map)",
+      "Bash(mkdir bihar_map)",
+      "Bash(unzip -o \"/Users/mukesh/Downloads/Bihar Dis Block details.zip\" -d bihar_map)",
+      "Bash(python3 -)",
+      "Bash(python3 -m py_compile backend/app/main.py)",
+      "Bash(python3 -c \"import json;d=json.load\\(open\\('backend/app/bihar_geo.json'\\)\\);print\\('geo json OK:',len\\(d['districts']\\),'districts'\\)\")",
+      "Bash(curl -s __TRACKED_VAR__/api/geo)",
+      "Bash(python3 -c \"import sys,json;d=json.load\\(sys.stdin\\);print\\('districts:',len\\(d['districts']\\),'| total blocks:',sum\\(len\\(x['blocks']\\) for x in d['districts']\\)\\);dm={x['district_name']:x for x in d['districts']};print\\('Darbhanga',dm['Darbhanga']['district_code'],'blocks:',len\\(dm['Darbhanga']['blocks']\\)\\);print\\('Purnia present:', 'Purnia' in dm\\)\")",
+      "Bash(git -c user.email=mukesh.sonepur@gmail.com -c user.name=Mukesh commit -q -m 'Add statewide Bihar geography to registration \\(38 districts, 532 blocks\\) *)"
     ]
   }
 }

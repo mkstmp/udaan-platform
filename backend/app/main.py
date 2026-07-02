@@ -32,6 +32,15 @@ app = FastAPI(title="Udaan API")
 # Directory holding the built single-page frontend (served same-origin below).
 _FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend"
 
+# Static Bihar geography (district -> blocks, with codes). Reference data,
+# bundled with the image and served read-only — no Firestore reads needed.
+import json as _json
+_GEO_PATH = Path(__file__).resolve().parent / "bihar_geo.json"
+try:
+    _GEO = _json.loads(_GEO_PATH.read_text(encoding="utf-8"))
+except Exception:
+    _GEO = {"state": "Bihar", "state_code": "BR", "districts": []}
+
 # CORS: lock to your real frontend origin(s) in production.
 app.add_middleware(
     CORSMiddleware,
@@ -61,6 +70,12 @@ def public_config():
 def list_exams():
     """Public list of exams (open/closed/completed) for the home page + pickers."""
     return db.list_open_exams()
+
+
+@app.get("/api/geo")
+def geo():
+    """Static Bihar district -> blocks reference for the registration dropdowns."""
+    return _GEO
 
 
 @app.get("/api/sample-papers")

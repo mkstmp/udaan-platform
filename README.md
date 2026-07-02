@@ -25,6 +25,21 @@ same-origin, so the whole product runs as **one Cloud Run service**.
 
 Public pages work now (home, sample papers, student result lookup, leaderboard).
 
+### Bihar geography (registration dropdowns)
+
+`backend/app/bihar_geo.json` holds all **38 districts → 532 blocks** (with
+generated stable codes), served read-only at **`GET /api/geo`**. Registration
+shows statewide District/Block dropdowns from this; the **exam centre** (from
+`centers/*`) is what actually seats a student — blocks without a centre show
+"no centre yet" and can't submit. Add centres as venues are confirmed.
+
+> Source: the supplied *Bihar Dis Block details* sheets (district → block).
+> **Purnia** was missing from the source, so its 13 blocks were filled from the
+> standard administrative list — **verify before launch**. District names were
+> canonicalised (e.g. Gayaji→Gaya, Patliputra Patna→Patna) and codes generated
+> (the sheet had none); ranking groups by *name*, so codes are cosmetic except
+> the district code used in `student_id`.
+
 ### Serving model + custom domain (Mumbai-safe path)
 
 **Firebase Hosting** serves the SPA (`frontend/index.html`) as a static file and

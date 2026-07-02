@@ -1,0 +1,2362 @@
+{
+ "state": "Bihar",
+ "state_code": "BR",
+ "districts": [
+  {
+   "district_name": "Araria",
+   "district_code": "ARA",
+   "blocks": [
+    {
+     "block_name": "Araria",
+     "block_code": "ARA"
+    },
+    {
+     "block_name": "Bhargama",
+     "block_code": "BHA"
+    },
+    {
+     "block_name": "Forbesganj",
+     "block_code": "FOR"
+    },
+    {
+     "block_name": "Jokihat",
+     "block_code": "JOK"
+    },
+    {
+     "block_name": "Kursa Kanta",
+     "block_code": "KUR"
+    },
+    {
+     "block_name": "Narpatganj",
+     "block_code": "NAR"
+    },
+    {
+     "block_name": "Palasi",
+     "block_code": "PAL"
+    },
+    {
+     "block_name": "Raniganj",
+     "block_code": "RAN"
+    },
+    {
+     "block_name": "Sikti",
+     "block_code": "SIK"
+    }
+   ]
+  },
+  {
+   "district_name": "Arwal",
+   "district_code": "ARW",
+   "blocks": [
+    {
+     "block_name": "Arwal",
+     "block_code": "ARW"
+    },
+    {
+     "block_name": "Kaler",
+     "block_code": "KAL"
+    },
+    {
+     "block_name": "Karpi",
+     "block_code": "KAR"
+    },
+    {
+     "block_name": "Kurtha",
+     "block_code": "KUR"
+    },
+    {
+     "block_name": "Sonbhadra Banshi Suryapur",
+     "block_code": "SON"
+    }
+   ]
+  },
+  {
+   "district_name": "Aurangabad",
+   "district_code": "AUR",
+   "blocks": [
+    {
+     "block_name": "Aurangabad",
+     "block_code": "AUR"
+    },
+    {
+     "block_name": "Barun",
+     "block_code": "BAR"
+    },
+    {
+     "block_name": "Daudnagar",
+     "block_code": "DAU"
+    },
+    {
+     "block_name": "Deo",
+     "block_code": "DEO"
+    },
+    {
+     "block_name": "Goh",
+     "block_code": "GOH"
+    },
+    {
+     "block_name": "Haspura",
+     "block_code": "HAS"
+    },
+    {
+     "block_name": "Kutumba",
+     "block_code": "KUT"
+    },
+    {
+     "block_name": "Madanpur",
+     "block_code": "MAD"
+    },
+    {
+     "block_name": "Nabinagar",
+     "block_code": "NAB"
+    },
+    {
+     "block_name": "Obra",
+     "block_code": "OBR"
+    },
+    {
+     "block_name": "Rafiganj",
+     "block_code": "RAF"
+    }
+   ]
+  },
+  {
+   "district_name": "Banka",
+   "district_code": "BAN",
+   "blocks": [
+    {
+     "block_name": "Amarpur",
+     "block_code": "AMA"
+    },
+    {
+     "block_name": "Banka",
+     "block_code": "BAN"
+    },
+    {
+     "block_name": "Barahat",
+     "block_code": "BAR"
+    },
+    {
+     "block_name": "Belhar",
+     "block_code": "BEL"
+    },
+    {
+     "block_name": "Bounsi",
+     "block_code": "BOU"
+    },
+    {
+     "block_name": "Chandan",
+     "block_code": "CHA"
+    },
+    {
+     "block_name": "Dhoraiya",
+     "block_code": "DHO"
+    },
+    {
+     "block_name": "Fullidumar",
+     "block_code": "FUL"
+    },
+    {
+     "block_name": "Katoria",
+     "block_code": "KAT"
+    },
+    {
+     "block_name": "Rajoun",
+     "block_code": "RAJ"
+    },
+    {
+     "block_name": "Sambhuganj",
+     "block_code": "SAM"
+    }
+   ]
+  },
+  {
+   "district_name": "Begusarai",
+   "district_code": "BEG",
+   "blocks": [
+    {
+     "block_name": "Bachhwara",
+     "block_code": "BAC"
+    },
+    {
+     "block_name": "Bakhri",
+     "block_code": "BAK"
+    },
+    {
+     "block_name": "Balia",
+     "block_code": "BAL"
+    },
+    {
+     "block_name": "Barauni",
+     "block_code": "BAR"
+    },
+    {
+     "block_name": "Begusarai",
+     "block_code": "BEG"
+    },
+    {
+     "block_name": "Bhagwanpur",
+     "block_code": "BHA"
+    },
+    {
+     "block_name": "Birpur",
+     "block_code": "BIR"
+    },
+    {
+     "block_name": "Cheria Bariarpur",
+     "block_code": "CHE"
+    },
+    {
+     "block_name": "Chhorahi",
+     "block_code": "CHH"
+    },
+    {
+     "block_name": "Dandari",
+     "block_code": "DAN"
+    },
+    {
+     "block_name": "Garhpura",
+     "block_code": "GAR"
+    },
+    {
+     "block_name": "Khodawandpur",
+     "block_code": "KHO"
+    },
+    {
+     "block_name": "Mansurchak",
+     "block_code": "MAN"
+    },
+    {
+     "block_name": "Matihani",
+     "block_code": "MAT"
+    },
+    {
+     "block_name": "Naokothi",
+     "block_code": "NAO"
+    },
+    {
+     "block_name": "Sahebpur Kamal",
+     "block_code": "SAH"
+    },
+    {
+     "block_name": "Samho Akha Kurha",
+     "block_code": "SAM"
+    },
+    {
+     "block_name": "Teghra",
+     "block_code": "TEG"
+    }
+   ]
+  },
+  {
+   "district_name": "Bhagalpur",
+   "district_code": "BHA",
+   "blocks": [
+    {
+     "block_name": "Bihpur",
+     "block_code": "BIH"
+    },
+    {
+     "block_name": "Gopalpur",
+     "block_code": "GOP"
+    },
+    {
+     "block_name": "Goradih",
+     "block_code": "GOR"
+    },
+    {
+     "block_name": "Ismailpur",
+     "block_code": "ISM"
+    },
+    {
+     "block_name": "Jagdishpur",
+     "block_code": "JAG"
+    },
+    {
+     "block_name": "Kahalgaon",
+     "block_code": "KAH"
+    },
+    {
+     "block_name": "Kharik",
+     "block_code": "KHA"
+    },
+    {
+     "block_name": "Narayanpur",
+     "block_code": "NAR"
+    },
+    {
+     "block_name": "Nathnagar",
+     "block_code": "NAT"
+    },
+    {
+     "block_name": "Naugachhia",
+     "block_code": "NAU"
+    },
+    {
+     "block_name": "Pirpainti",
+     "block_code": "PIR"
+    },
+    {
+     "block_name": "Rangra Chowk",
+     "block_code": "RAN"
+    },
+    {
+     "block_name": "Sabour",
+     "block_code": "SAB"
+    },
+    {
+     "block_name": "Sanhaula",
+     "block_code": "SAN"
+    },
+    {
+     "block_name": "Shahkund",
+     "block_code": "SHA"
+    },
+    {
+     "block_name": "Sultanganj",
+     "block_code": "SUL"
+    }
+   ]
+  },
+  {
+   "district_name": "Bhojpur",
+   "district_code": "BHO",
+   "blocks": [
+    {
+     "block_name": "Arrah",
+     "block_code": "ARR"
+    },
+    {
+     "block_name": "Agiaon",
+     "block_code": "AGI"
+    },
+    {
+     "block_name": "Barhara",
+     "block_code": "BAR"
+    },
+    {
+     "block_name": "Bihiya",
+     "block_code": "BIH"
+    },
+    {
+     "block_name": "Charpokhari",
+     "block_code": "CHA"
+    },
+    {
+     "block_name": "Garhani",
+     "block_code": "GAR"
+    },
+    {
+     "block_name": "Jagdishpur",
+     "block_code": "JAG"
+    },
+    {
+     "block_name": "Koilwar",
+     "block_code": "KOI"
+    },
+    {
+     "block_name": "Piro",
+     "block_code": "PIR"
+    },
+    {
+     "block_name": "Sahar",
+     "block_code": "SAH"
+    },
+    {
+     "block_name": "Sandesh",
+     "block_code": "SAN"
+    },
+    {
+     "block_name": "Shahpur",
+     "block_code": "SHA"
+    },
+    {
+     "block_name": "Tarari",
+     "block_code": "TAR"
+    },
+    {
+     "block_name": "Udwantnagar",
+     "block_code": "UDW"
+    }
+   ]
+  },
+  {
+   "district_name": "Buxar",
+   "district_code": "BUX",
+   "blocks": [
+    {
+     "block_name": "Buxar",
+     "block_code": "BUX"
+    },
+    {
+     "block_name": "Brahmapur",
+     "block_code": "BRA"
+    },
+    {
+     "block_name": "Chakki",
+     "block_code": "CHA"
+    },
+    {
+     "block_name": "Chausa",
+     "block_code": "CHS"
+    },
+    {
+     "block_name": "Chaugain",
+     "block_code": "CHU"
+    },
+    {
+     "block_name": "Dumraon",
+     "block_code": "DUM"
+    },
+    {
+     "block_name": "Itarhi",
+     "block_code": "ITA"
+    },
+    {
+     "block_name": "Kesath",
+     "block_code": "KES"
+    },
+    {
+     "block_name": "Nawanagar",
+     "block_code": "NAW"
+    },
+    {
+     "block_name": "Rajpur",
+     "block_code": "RAJ"
+    },
+    {
+     "block_name": "Simri",
+     "block_code": "SIM"
+    }
+   ]
+  },
+  {
+   "district_name": "Darbhanga",
+   "district_code": "DAR",
+   "blocks": [
+    {
+     "block_name": "Alinagar",
+     "block_code": "ALI"
+    },
+    {
+     "block_name": "Bahadurpur",
+     "block_code": "BAH"
+    },
+    {
+     "block_name": "Baheri",
+     "block_code": "BAE"
+    },
+    {
+     "block_name": "Benipur",
+     "block_code": "BEN"
+    },
+    {
+     "block_name": "Biraul",
+     "block_code": "BIR"
+    },
+    {
+     "block_name": "Darbhanga Sadar",
+     "block_code": "DAR"
+    },
+    {
+     "block_name": "Gaura Bauram",
+     "block_code": "GAU"
+    },
+    {
+     "block_name": "Ghanshyampur",
+     "block_code": "GHA"
+    },
+    {
+     "block_name": "Hanuman Nagar",
+     "block_code": "HAN"
+    },
+    {
+     "block_name": "Hayaghat",
+     "block_code": "HAY"
+    },
+    {
+     "block_name": "Jale",
+     "block_code": "JAL"
+    },
+    {
+     "block_name": "Keoti",
+     "block_code": "KEO"
+    },
+    {
+     "block_name": "Kiratpur",
+     "block_code": "KIR"
+    },
+    {
+     "block_name": "Kusheshwar Asthan East",
+     "block_code": "KUH"
+    },
+    {
+     "block_name": "Kusheshwar Asthan",
+     "block_code": "KUS"
+    },
+    {
+     "block_name": "Manigachhi",
+     "block_code": "MAN"
+    },
+    {
+     "block_name": "Singhwara",
+     "block_code": "SIN"
+    },
+    {
+     "block_name": "Tardih",
+     "block_code": "TAR"
+    }
+   ]
+  },
+  {
+   "district_name": "East Champaran",
+   "district_code": "EAS",
+   "blocks": [
+    {
+     "block_name": "Adapur",
+     "block_code": "ADA"
+    },
+    {
+     "block_name": "Areraj",
+     "block_code": "ARE"
+    },
+    {
+     "block_name": "Banjaria",
+     "block_code": "BAN"
+    },
+    {
+     "block_name": "Bankatwa",
+     "block_code": "BAK"
+    },
+    {
+     "block_name": "Chakia",
+     "block_code": "CHA"
+    },
+    {
+     "block_name": "Chiraiya",
+     "block_code": "CHI"
+    },
+    {
+     "block_name": "Dhaka",
+     "block_code": "DHA"
+    },
+    {
+     "block_name": "Ghorasahan",
+     "block_code": "GHO"
+    },
+    {
+     "block_name": "Harsidhi",
+     "block_code": "HAR"
+    },
+    {
+     "block_name": "Kalyanpur",
+     "block_code": "KAL"
+    },
+    {
+     "block_name": "Kesaria",
+     "block_code": "KES"
+    },
+    {
+     "block_name": "Kotwa",
+     "block_code": "KOT"
+    },
+    {
+     "block_name": "Madhuban",
+     "block_code": "MAD"
+    },
+    {
+     "block_name": "Mehsi",
+     "block_code": "MEH"
+    },
+    {
+     "block_name": "Motihari",
+     "block_code": "MOT"
+    },
+    {
+     "block_name": "Narkatia",
+     "block_code": "NAR"
+    },
+    {
+     "block_name": "Paharpur",
+     "block_code": "PAH"
+    },
+    {
+     "block_name": "Pakri Dayal",
+     "block_code": "PAK"
+    },
+    {
+     "block_name": "Patahi",
+     "block_code": "PAT"
+    },
+    {
+     "block_name": "Phenhara",
+     "block_code": "PHE"
+    },
+    {
+     "block_name": "Piprakothi",
+     "block_code": "PIP"
+    },
+    {
+     "block_name": "Ramgarhwa",
+     "block_code": "RAM"
+    },
+    {
+     "block_name": "Raxaul",
+     "block_code": "RAX"
+    },
+    {
+     "block_name": "Sangrampur",
+     "block_code": "SAN"
+    },
+    {
+     "block_name": "Sugauli",
+     "block_code": "SUG"
+    },
+    {
+     "block_name": "Tetaria",
+     "block_code": "TET"
+    },
+    {
+     "block_name": "Turkaulia",
+     "block_code": "TUR"
+    }
+   ]
+  },
+  {
+   "district_name": "Gaya",
+   "district_code": "GAY",
+   "blocks": [
+    {
+     "block_name": "Gaya Town",
+     "block_code": "GAY"
+    },
+    {
+     "block_name": "Amas",
+     "block_code": "AMA"
+    },
+    {
+     "block_name": "Atri",
+     "block_code": "ATR"
+    },
+    {
+     "block_name": "Banke Bazar",
+     "block_code": "BAN"
+    },
+    {
+     "block_name": "Barachatti",
+     "block_code": "BAR"
+    },
+    {
+     "block_name": "Bathani",
+     "block_code": "BAT"
+    },
+    {
+     "block_name": "Belaganj",
+     "block_code": "BEL"
+    },
+    {
+     "block_name": "Bodh Gaya",
+     "block_code": "BOD"
+    },
+    {
+     "block_name": "Dobhi",
+     "block_code": "DOB"
+    },
+    {
+     "block_name": "Dumaria",
+     "block_code": "DUM"
+    },
+    {
+     "block_name": "Fatehpur",
+     "block_code": "FAT"
+    },
+    {
+     "block_name": "Guraru",
+     "block_code": "GUR"
+    },
+    {
+     "block_name": "Gurua",
+     "block_code": "GUU"
+    },
+    {
+     "block_name": "Imamganj",
+     "block_code": "IMA"
+    },
+    {
+     "block_name": "Khizirsarai",
+     "block_code": "KHI"
+    },
+    {
+     "block_name": "Konch",
+     "block_code": "KON"
+    },
+    {
+     "block_name": "Manpur",
+     "block_code": "MAN"
+    },
+    {
+     "block_name": "Mohanpur",
+     "block_code": "MOH"
+    },
+    {
+     "block_name": "Muhra",
+     "block_code": "MUH"
+    },
+    {
+     "block_name": "Paraiya",
+     "block_code": "PAR"
+    },
+    {
+     "block_name": "Sherghati",
+     "block_code": "SHE"
+    },
+    {
+     "block_name": "Tan Kuppa",
+     "block_code": "TAN"
+    },
+    {
+     "block_name": "Tekari",
+     "block_code": "TEK"
+    },
+    {
+     "block_name": "Wazirganj",
+     "block_code": "WAZ"
+    }
+   ]
+  },
+  {
+   "district_name": "Gopalganj",
+   "district_code": "GOP",
+   "blocks": [
+    {
+     "block_name": "Baikunthpur",
+     "block_code": "BAI"
+    },
+    {
+     "block_name": "Barauli",
+     "block_code": "BAR"
+    },
+    {
+     "block_name": "Bhorey",
+     "block_code": "BHO"
+    },
+    {
+     "block_name": "Bijaipur",
+     "block_code": "BIJ"
+    },
+    {
+     "block_name": "Gopalganj",
+     "block_code": "GOP"
+    },
+    {
+     "block_name": "Hathua",
+     "block_code": "HAT"
+    },
+    {
+     "block_name": "Katiya",
+     "block_code": "KAT"
+    },
+    {
+     "block_name": "Kuchaikote",
+     "block_code": "KUC"
+    },
+    {
+     "block_name": "Manjha",
+     "block_code": "MAN"
+    },
+    {
+     "block_name": "Pach Deuri",
+     "block_code": "PAC"
+    },
+    {
+     "block_name": "Phulwaria",
+     "block_code": "PHU"
+    },
+    {
+     "block_name": "Sidhwalia",
+     "block_code": "SID"
+    },
+    {
+     "block_name": "Thawe",
+     "block_code": "THA"
+    },
+    {
+     "block_name": "Uchkagaon",
+     "block_code": "UCH"
+    }
+   ]
+  },
+  {
+   "district_name": "Jamui",
+   "district_code": "JAM",
+   "blocks": [
+    {
+     "block_name": "Barhat",
+     "block_code": "BAR"
+    },
+    {
+     "block_name": "Chakai",
+     "block_code": "CHA"
+    },
+    {
+     "block_name": "Gidhour",
+     "block_code": "GID"
+    },
+    {
+     "block_name": "Islampur Aliganj",
+     "block_code": "ISL"
+    },
+    {
+     "block_name": "Jamui",
+     "block_code": "JAM"
+    },
+    {
+     "block_name": "Jhajha",
+     "block_code": "JHA"
+    },
+    {
+     "block_name": "Khaira",
+     "block_code": "KHA"
+    },
+    {
+     "block_name": "Laxmipur",
+     "block_code": "LAX"
+    },
+    {
+     "block_name": "Sikandra",
+     "block_code": "SIK"
+    },
+    {
+     "block_name": "Sono",
+     "block_code": "SON"
+    }
+   ]
+  },
+  {
+   "district_name": "Jehanabad",
+   "district_code": "JEH",
+   "blocks": [
+    {
+     "block_name": "Ghoshi",
+     "block_code": "GHO"
+    },
+    {
+     "block_name": "Hulasganj",
+     "block_code": "HUL"
+    },
+    {
+     "block_name": "Jehanabad",
+     "block_code": "JEH"
+    },
+    {
+     "block_name": "Kako",
+     "block_code": "KAK"
+    },
+    {
+     "block_name": "Makhdumpur",
+     "block_code": "MAK"
+    },
+    {
+     "block_name": "Modanganj",
+     "block_code": "MOD"
+    },
+    {
+     "block_name": "Ratni Faridpur",
+     "block_code": "RAT"
+    }
+   ]
+  },
+  {
+   "district_name": "Kaimur",
+   "district_code": "KAI",
+   "blocks": [
+    {
+     "block_name": "Adhaura",
+     "block_code": "ADH"
+    },
+    {
+     "block_name": "Bhabua",
+     "block_code": "BHA"
+    },
+    {
+     "block_name": "Bhagwanpur",
+     "block_code": "BHG"
+    },
+    {
+     "block_name": "Chainpur",
+     "block_code": "CHA"
+    },
+    {
+     "block_name": "Chand",
+     "block_code": "CHN"
+    },
+    {
+     "block_name": "Durgawati",
+     "block_code": "DUR"
+    },
+    {
+     "block_name": "Kudra",
+     "block_code": "KUD"
+    },
+    {
+     "block_name": "Mohania",
+     "block_code": "MOH"
+    },
+    {
+     "block_name": "Nuaon",
+     "block_code": "NUA"
+    },
+    {
+     "block_name": "Ramgarh",
+     "block_code": "RAM"
+    },
+    {
+     "block_name": "Rampur",
+     "block_code": "RAP"
+    }
+   ]
+  },
+  {
+   "district_name": "Katihar",
+   "district_code": "KAT",
+   "blocks": [
+    {
+     "block_name": "Amdabad",
+     "block_code": "AMD"
+    },
+    {
+     "block_name": "Azamnagar",
+     "block_code": "AZA"
+    },
+    {
+     "block_name": "Balrampur",
+     "block_code": "BAL"
+    },
+    {
+     "block_name": "Barari",
+     "block_code": "BAR"
+    },
+    {
+     "block_name": "Barsoi",
+     "block_code": "BAS"
+    },
+    {
+     "block_name": "Dandkhora",
+     "block_code": "DAN"
+    },
+    {
+     "block_name": "Falka",
+     "block_code": "FAL"
+    },
+    {
+     "block_name": "Hasanganj",
+     "block_code": "HAS"
+    },
+    {
+     "block_name": "Kadwa",
+     "block_code": "KAD"
+    },
+    {
+     "block_name": "Katihar",
+     "block_code": "KAT"
+    },
+    {
+     "block_name": "Korha",
+     "block_code": "KOR"
+    },
+    {
+     "block_name": "Kursela",
+     "block_code": "KUR"
+    },
+    {
+     "block_name": "Manihari",
+     "block_code": "MAN"
+    },
+    {
+     "block_name": "Mansahi",
+     "block_code": "MAS"
+    },
+    {
+     "block_name": "Pranpur",
+     "block_code": "PRA"
+    },
+    {
+     "block_name": "Sameli",
+     "block_code": "SAM"
+    }
+   ]
+  },
+  {
+   "district_name": "Khagaria",
+   "district_code": "KHA",
+   "blocks": [
+    {
+     "block_name": "Alauli",
+     "block_code": "ALA"
+    },
+    {
+     "block_name": "Baldaur",
+     "block_code": "BAL"
+    },
+    {
+     "block_name": "Chautham",
+     "block_code": "CHA"
+    },
+    {
+     "block_name": "Gogri",
+     "block_code": "GOG"
+    },
+    {
+     "block_name": "Khagaria",
+     "block_code": "KHA"
+    },
+    {
+     "block_name": "Mansi",
+     "block_code": "MAN"
+    },
+    {
+     "block_name": "Parbatta",
+     "block_code": "PAR"
+    }
+   ]
+  },
+  {
+   "district_name": "Kishanganj",
+   "district_code": "KIS",
+   "blocks": [
+    {
+     "block_name": "Bahadurganj",
+     "block_code": "BAH"
+    },
+    {
+     "block_name": "Dighalbank",
+     "block_code": "DIG"
+    },
+    {
+     "block_name": "Kishanganj",
+     "block_code": "KIS"
+    },
+    {
+     "block_name": "Kochadhaman",
+     "block_code": "KOC"
+    },
+    {
+     "block_name": "Pothia",
+     "block_code": "POT"
+    },
+    {
+     "block_name": "Terhagachh",
+     "block_code": "TER"
+    },
+    {
+     "block_name": "Thakurganj",
+     "block_code": "THA"
+    }
+   ]
+  },
+  {
+   "district_name": "Lakhisarai",
+   "district_code": "LAK",
+   "blocks": [
+    {
+     "block_name": "Barahiya",
+     "block_code": "BAR"
+    },
+    {
+     "block_name": "Chanan",
+     "block_code": "CHA"
+    },
+    {
+     "block_name": "Halsi",
+     "block_code": "HAL"
+    },
+    {
+     "block_name": "Lakhisarai",
+     "block_code": "LAK"
+    },
+    {
+     "block_name": "Pipariya",
+     "block_code": "PIP"
+    },
+    {
+     "block_name": "Ramgarh Chowk",
+     "block_code": "RAM"
+    },
+    {
+     "block_name": "Surajgarha",
+     "block_code": "SUR"
+    }
+   ]
+  },
+  {
+   "district_name": "Madhepura",
+   "district_code": "MAH",
+   "blocks": [
+    {
+     "block_name": "Alamnagar",
+     "block_code": "ALA"
+    },
+    {
+     "block_name": "Bihariganj",
+     "block_code": "BIH"
+    },
+    {
+     "block_name": "Chousa",
+     "block_code": "CHO"
+    },
+    {
+     "block_name": "Gamhariya",
+     "block_code": "GAM"
+    },
+    {
+     "block_name": "Ghelardh",
+     "block_code": "GHE"
+    },
+    {
+     "block_name": "Gwalpara",
+     "block_code": "GWA"
+    },
+    {
+     "block_name": "Kumarkhand",
+     "block_code": "KUM"
+    },
+    {
+     "block_name": "Madhepura",
+     "block_code": "MAD"
+    },
+    {
+     "block_name": "Murliganj",
+     "block_code": "MUR"
+    },
+    {
+     "block_name": "Puraini",
+     "block_code": "PUR"
+    },
+    {
+     "block_name": "Shankarpur",
+     "block_code": "SHA"
+    },
+    {
+     "block_name": "Singheshwar",
+     "block_code": "SIN"
+    },
+    {
+     "block_name": "Udakishunganj",
+     "block_code": "UDA"
+    }
+   ]
+  },
+  {
+   "district_name": "Madhubani",
+   "district_code": "MAD",
+   "blocks": [
+    {
+     "block_name": "Andhra Tharhi",
+     "block_code": "AND"
+    },
+    {
+     "block_name": "Babubarhi",
+     "block_code": "BAB"
+    },
+    {
+     "block_name": "Basopatti",
+     "block_code": "BAS"
+    },
+    {
+     "block_name": "Benipatti",
+     "block_code": "BEN"
+    },
+    {
+     "block_name": "Bisfi",
+     "block_code": "BIS"
+    },
+    {
+     "block_name": "Ghoghardiha",
+     "block_code": "GHO"
+    },
+    {
+     "block_name": "Harlakhi",
+     "block_code": "HAR"
+    },
+    {
+     "block_name": "Jainagar",
+     "block_code": "JAI"
+    },
+    {
+     "block_name": "Jhanjharpur",
+     "block_code": "JHA"
+    },
+    {
+     "block_name": "Kaluahi",
+     "block_code": "KAL"
+    },
+    {
+     "block_name": "Khajauli",
+     "block_code": "KHA"
+    },
+    {
+     "block_name": "Ladania",
+     "block_code": "LAD"
+    },
+    {
+     "block_name": "Lakhnaur",
+     "block_code": "LAK"
+    },
+    {
+     "block_name": "Laukahi",
+     "block_code": "LAU"
+    },
+    {
+     "block_name": "Madhwapur",
+     "block_code": "MAH"
+    },
+    {
+     "block_name": "Madhubani",
+     "block_code": "MAD"
+    },
+    {
+     "block_name": "Pandaul",
+     "block_code": "PAN"
+    },
+    {
+     "block_name": "Phulparas",
+     "block_code": "PHU"
+    },
+    {
+     "block_name": "Rahika",
+     "block_code": "RAH"
+    },
+    {
+     "block_name": "Rajnagar",
+     "block_code": "RAJ"
+    }
+   ]
+  },
+  {
+   "district_name": "Munger",
+   "district_code": "MUN",
+   "blocks": [
+    {
+     "block_name": "Asarganj",
+     "block_code": "ASA"
+    },
+    {
+     "block_name": "Bariarpur",
+     "block_code": "BAR"
+    },
+    {
+     "block_name": "Dharhara",
+     "block_code": "DHA"
+    },
+    {
+     "block_name": "Haveli Kharagpur",
+     "block_code": "HAV"
+    },
+    {
+     "block_name": "Jamalpur",
+     "block_code": "JAM"
+    },
+    {
+     "block_name": "Munger",
+     "block_code": "MUN"
+    },
+    {
+     "block_name": "Sangrampur",
+     "block_code": "SAN"
+    },
+    {
+     "block_name": "Tarapur",
+     "block_code": "TAR"
+    },
+    {
+     "block_name": "Tetia Bambar",
+     "block_code": "TET"
+    }
+   ]
+  },
+  {
+   "district_name": "Muzaffarpur",
+   "district_code": "MUZ",
+   "blocks": [
+    {
+     "block_name": "Aurai Block",
+     "block_code": "AUR"
+    },
+    {
+     "block_name": "Bandra",
+     "block_code": "BAN"
+    },
+    {
+     "block_name": "Bochaha",
+     "block_code": "BOC"
+    },
+    {
+     "block_name": "Gaighat",
+     "block_code": "GAI"
+    },
+    {
+     "block_name": "Kanti",
+     "block_code": "KAN"
+    },
+    {
+     "block_name": "Katra",
+     "block_code": "KAT"
+    },
+    {
+     "block_name": "Kurhani",
+     "block_code": "KUR"
+    },
+    {
+     "block_name": "Marwan",
+     "block_code": "MAR"
+    },
+    {
+     "block_name": "Minapur",
+     "block_code": "MIN"
+    },
+    {
+     "block_name": "Muraul (Dholi)",
+     "block_code": "MUR"
+    },
+    {
+     "block_name": "Motipur",
+     "block_code": "MOT"
+    },
+    {
+     "block_name": "Musahri",
+     "block_code": "MUS"
+    },
+    {
+     "block_name": "Paroo",
+     "block_code": "PAR"
+    },
+    {
+     "block_name": "Sahebganj",
+     "block_code": "SAH"
+    },
+    {
+     "block_name": "Sakra",
+     "block_code": "SAK"
+    },
+    {
+     "block_name": "Saraiya",
+     "block_code": "SAR"
+    }
+   ]
+  },
+  {
+   "district_name": "Nalanda",
+   "district_code": "NAL",
+   "blocks": [
+    {
+     "block_name": "Asthawan",
+     "block_code": "AST"
+    },
+    {
+     "block_name": "Bena",
+     "block_code": "BEN"
+    },
+    {
+     "block_name": "Biharsharif",
+     "block_code": "BIH"
+    },
+    {
+     "block_name": "Bind",
+     "block_code": "BIN"
+    },
+    {
+     "block_name": "Chandi",
+     "block_code": "CHA"
+    },
+    {
+     "block_name": "Ekangarsarai",
+     "block_code": "EKA"
+    },
+    {
+     "block_name": "Giriyak",
+     "block_code": "GIR"
+    },
+    {
+     "block_name": "Harnaut",
+     "block_code": "HAR"
+    },
+    {
+     "block_name": "Hilsa",
+     "block_code": "HIL"
+    },
+    {
+     "block_name": "Islampur",
+     "block_code": "ISL"
+    },
+    {
+     "block_name": "Karai Parsurai",
+     "block_code": "KAR"
+    },
+    {
+     "block_name": "Katrisarai",
+     "block_code": "KAT"
+    },
+    {
+     "block_name": "Nagarnausa",
+     "block_code": "NAG"
+    },
+    {
+     "block_name": "Noorsarai",
+     "block_code": "NOO"
+    },
+    {
+     "block_name": "Parwalpur",
+     "block_code": "PAR"
+    },
+    {
+     "block_name": "Rahui",
+     "block_code": "RAH"
+    },
+    {
+     "block_name": "Rajgir",
+     "block_code": "RAJ"
+    },
+    {
+     "block_name": "Sarmera",
+     "block_code": "SAR"
+    },
+    {
+     "block_name": "Silao",
+     "block_code": "SIL"
+    },
+    {
+     "block_name": "Tharthari",
+     "block_code": "THA"
+    }
+   ]
+  },
+  {
+   "district_name": "Nawada",
+   "district_code": "NAW",
+   "blocks": [
+    {
+     "block_name": "Akbarpur",
+     "block_code": "AKB"
+    },
+    {
+     "block_name": "Govindpur",
+     "block_code": "GOV"
+    },
+    {
+     "block_name": "Hisua",
+     "block_code": "HIS"
+    },
+    {
+     "block_name": "Kashichak",
+     "block_code": "KAS"
+    },
+    {
+     "block_name": "Kawakol",
+     "block_code": "KAW"
+    },
+    {
+     "block_name": "Meskaur",
+     "block_code": "MES"
+    },
+    {
+     "block_name": "Nardiganj",
+     "block_code": "NAR"
+    },
+    {
+     "block_name": "Narhat",
+     "block_code": "NAH"
+    },
+    {
+     "block_name": "Nawada",
+     "block_code": "NAW"
+    },
+    {
+     "block_name": "Pakribarawan",
+     "block_code": "PAK"
+    },
+    {
+     "block_name": "Rajauli",
+     "block_code": "RAJ"
+    },
+    {
+     "block_name": "Roh",
+     "block_code": "ROH"
+    },
+    {
+     "block_name": "Sirdala",
+     "block_code": "SIR"
+    },
+    {
+     "block_name": "Warisaliganj",
+     "block_code": "WAR"
+    }
+   ]
+  },
+  {
+   "district_name": "Patna",
+   "district_code": "PAT",
+   "blocks": [
+    {
+     "block_name": "Patna Sadar",
+     "block_code": "PAT"
+    },
+    {
+     "block_name": "Athmalgola",
+     "block_code": "ATH"
+    },
+    {
+     "block_name": "Bakhtiarpur",
+     "block_code": "BAK"
+    },
+    {
+     "block_name": "Barh",
+     "block_code": "BAR"
+    },
+    {
+     "block_name": "Belchi",
+     "block_code": "BEL"
+    },
+    {
+     "block_name": "Bihta",
+     "block_code": "BIH"
+    },
+    {
+     "block_name": "Bikram",
+     "block_code": "BIK"
+    },
+    {
+     "block_name": "Danapur",
+     "block_code": "DAN"
+    },
+    {
+     "block_name": "Daniyawan",
+     "block_code": "DAI"
+    },
+    {
+     "block_name": "Dhanarua",
+     "block_code": "DHA"
+    },
+    {
+     "block_name": "Dulhin Bazar",
+     "block_code": "DUL"
+    },
+    {
+     "block_name": "Fatuha",
+     "block_code": "FAT"
+    },
+    {
+     "block_name": "Ghoswari",
+     "block_code": "GHO"
+    },
+    {
+     "block_name": "Khusrupur",
+     "block_code": "KHU"
+    },
+    {
+     "block_name": "Maner",
+     "block_code": "MAN"
+    },
+    {
+     "block_name": "Masaurhi",
+     "block_code": "MAS"
+    },
+    {
+     "block_name": "Mokama",
+     "block_code": "MOK"
+    },
+    {
+     "block_name": "Naubatpur",
+     "block_code": "NAU"
+    },
+    {
+     "block_name": "Paliganj",
+     "block_code": "PAL"
+    },
+    {
+     "block_name": "Pandarak",
+     "block_code": "PAN"
+    },
+    {
+     "block_name": "Phulwari Sharif",
+     "block_code": "PHU"
+    },
+    {
+     "block_name": "Punpun",
+     "block_code": "PUN"
+    },
+    {
+     "block_name": "Sampatchak",
+     "block_code": "SAM"
+    }
+   ]
+  },
+  {
+   "district_name": "Purnia",
+   "district_code": "PUR",
+   "blocks": [
+    {
+     "block_name": "Amour",
+     "block_code": "AMO"
+    },
+    {
+     "block_name": "Baisa",
+     "block_code": "BAI"
+    },
+    {
+     "block_name": "Banmankhi",
+     "block_code": "BAN"
+    },
+    {
+     "block_name": "Barhara Kothi",
+     "block_code": "BAR"
+    },
+    {
+     "block_name": "Bhawanipur",
+     "block_code": "BHA"
+    },
+    {
+     "block_name": "Dagarua",
+     "block_code": "DAG"
+    },
+    {
+     "block_name": "Dhamdaha",
+     "block_code": "DHA"
+    },
+    {
+     "block_name": "Jalalgarh",
+     "block_code": "JAL"
+    },
+    {
+     "block_name": "Kasba",
+     "block_code": "KAS"
+    },
+    {
+     "block_name": "Krityanand Nagar",
+     "block_code": "KRI"
+    },
+    {
+     "block_name": "Purnia East",
+     "block_code": "PUR"
+    },
+    {
+     "block_name": "Rupauli",
+     "block_code": "RUP"
+    },
+    {
+     "block_name": "Srinagar",
+     "block_code": "SRI"
+    }
+   ]
+  },
+  {
+   "district_name": "Rohtas",
+   "district_code": "ROH",
+   "blocks": [
+    {
+     "block_name": "Akorhi Gola",
+     "block_code": "AKO"
+    },
+    {
+     "block_name": "Bikramganj",
+     "block_code": "BIK"
+    },
+    {
+     "block_name": "Chenari",
+     "block_code": "CHE"
+    },
+    {
+     "block_name": "Dawath",
+     "block_code": "DAW"
+    },
+    {
+     "block_name": "Dehri",
+     "block_code": "DEH"
+    },
+    {
+     "block_name": "Dinara",
+     "block_code": "DIN"
+    },
+    {
+     "block_name": "Karakat",
+     "block_code": "KAR"
+    },
+    {
+     "block_name": "Kargahar",
+     "block_code": "KAG"
+    },
+    {
+     "block_name": "Kochas",
+     "block_code": "KOC"
+    },
+    {
+     "block_name": "Nasriganj",
+     "block_code": "NAS"
+    },
+    {
+     "block_name": "Nauhatta",
+     "block_code": "NAU"
+    },
+    {
+     "block_name": "Nokha",
+     "block_code": "NOK"
+    },
+    {
+     "block_name": "Rajpur",
+     "block_code": "RAJ"
+    },
+    {
+     "block_name": "Rohtas",
+     "block_code": "ROH"
+    },
+    {
+     "block_name": "Sanjhauli",
+     "block_code": "SAN"
+    },
+    {
+     "block_name": "Sasaram",
+     "block_code": "SAS"
+    },
+    {
+     "block_name": "Sheosagar",
+     "block_code": "SHE"
+    },
+    {
+     "block_name": "Suryapura",
+     "block_code": "SUR"
+    },
+    {
+     "block_name": "Tilauthu",
+     "block_code": "TIL"
+    }
+   ]
+  },
+  {
+   "district_name": "Saharsa",
+   "district_code": "SAH",
+   "blocks": [
+    {
+     "block_name": "Banma Itahri",
+     "block_code": "BAN"
+    },
+    {
+     "block_name": "Kahara",
+     "block_code": "KAH"
+    },
+    {
+     "block_name": "Mahishi",
+     "block_code": "MAH"
+    },
+    {
+     "block_name": "Nauhatta",
+     "block_code": "NAU"
+    },
+    {
+     "block_name": "Patarghat",
+     "block_code": "PAT"
+    },
+    {
+     "block_name": "Salkhua",
+     "block_code": "SAL"
+    },
+    {
+     "block_name": "Sattar Kataiya",
+     "block_code": "SAT"
+    },
+    {
+     "block_name": "Sour Bazar",
+     "block_code": "SOU"
+    },
+    {
+     "block_name": "Simri Bakhtiyarpur",
+     "block_code": "SIM"
+    },
+    {
+     "block_name": "Sonbarsa",
+     "block_code": "SON"
+    }
+   ]
+  },
+  {
+   "district_name": "Samastipur",
+   "district_code": "SAM",
+   "blocks": [
+    {
+     "block_name": "Bibhutipur",
+     "block_code": "BIB"
+    },
+    {
+     "block_name": "Bithan",
+     "block_code": "BIT"
+    },
+    {
+     "block_name": "Dalsing Sarai",
+     "block_code": "DAL"
+    },
+    {
+     "block_name": "Hasanpur",
+     "block_code": "HAS"
+    },
+    {
+     "block_name": "Kalyanpur",
+     "block_code": "KAL"
+    },
+    {
+     "block_name": "Khanpur",
+     "block_code": "KHA"
+    },
+    {
+     "block_name": "Mohanpur",
+     "block_code": "MOH"
+    },
+    {
+     "block_name": "Mohiuddin Nagar",
+     "block_code": "MOI"
+    },
+    {
+     "block_name": "Morwa",
+     "block_code": "MOR"
+    },
+    {
+     "block_name": "Patori",
+     "block_code": "PAT"
+    },
+    {
+     "block_name": "Pusa",
+     "block_code": "PUS"
+    },
+    {
+     "block_name": "Rosera",
+     "block_code": "ROS"
+    },
+    {
+     "block_name": "Samastipur",
+     "block_code": "SAM"
+    },
+    {
+     "block_name": "Sarairanjan",
+     "block_code": "SAR"
+    },
+    {
+     "block_name": "Shivajinagar",
+     "block_code": "SHI"
+    },
+    {
+     "block_name": "Singhiya",
+     "block_code": "SIN"
+    },
+    {
+     "block_name": "Tajpur",
+     "block_code": "TAJ"
+    },
+    {
+     "block_name": "Ujiyarpur",
+     "block_code": "UJI"
+    },
+    {
+     "block_name": "Vidyapati Nagar",
+     "block_code": "VID"
+    },
+    {
+     "block_name": "Warishnagar",
+     "block_code": "WAR"
+    }
+   ]
+  },
+  {
+   "district_name": "Saran",
+   "district_code": "SAR",
+   "blocks": [
+    {
+     "block_name": "Amnour",
+     "block_code": "AMN"
+    },
+    {
+     "block_name": "Baniapur",
+     "block_code": "BAN"
+    },
+    {
+     "block_name": "Chhapra",
+     "block_code": "CHH"
+    },
+    {
+     "block_name": "Dariyapur",
+     "block_code": "DAR"
+    },
+    {
+     "block_name": "Dighwara",
+     "block_code": "DIG"
+    },
+    {
+     "block_name": "Ekma",
+     "block_code": "EKM"
+    },
+    {
+     "block_name": "Garkha",
+     "block_code": "GAR"
+    },
+    {
+     "block_name": "Ishupur",
+     "block_code": "ISH"
+    },
+    {
+     "block_name": "Jalalpur",
+     "block_code": "JAL"
+    },
+    {
+     "block_name": "Lahladpur",
+     "block_code": "LAH"
+    },
+    {
+     "block_name": "Maker",
+     "block_code": "MAK"
+    },
+    {
+     "block_name": "Manjhi",
+     "block_code": "MAN"
+    },
+    {
+     "block_name": "Marhaura",
+     "block_code": "MAR"
+    },
+    {
+     "block_name": "Mashrakh",
+     "block_code": "MAS"
+    },
+    {
+     "block_name": "Nagra",
+     "block_code": "NAG"
+    },
+    {
+     "block_name": "Panapur",
+     "block_code": "PAN"
+    },
+    {
+     "block_name": "Parsa",
+     "block_code": "PAR"
+    },
+    {
+     "block_name": "Revelganj",
+     "block_code": "REV"
+    },
+    {
+     "block_name": "Sonpur",
+     "block_code": "SON"
+    },
+    {
+     "block_name": "Taraiya",
+     "block_code": "TAR"
+    }
+   ]
+  },
+  {
+   "district_name": "Sheikhpura",
+   "district_code": "SHE",
+   "blocks": [
+    {
+     "block_name": "Ariari",
+     "block_code": "ARI"
+    },
+    {
+     "block_name": "Barbigha",
+     "block_code": "BAR"
+    },
+    {
+     "block_name": "Chewara",
+     "block_code": "CHE"
+    },
+    {
+     "block_name": "Ghat Kusumbha",
+     "block_code": "GHA"
+    },
+    {
+     "block_name": "Sheikhpura",
+     "block_code": "SHE"
+    },
+    {
+     "block_name": "Shekhopur Sarai",
+     "block_code": "SHK"
+    }
+   ]
+  },
+  {
+   "district_name": "Sheohar",
+   "district_code": "SHO",
+   "blocks": [
+    {
+     "block_name": "Dumri Katsari",
+     "block_code": "DUM"
+    },
+    {
+     "block_name": "Piprahi",
+     "block_code": "PIP"
+    },
+    {
+     "block_name": "Purnahiya",
+     "block_code": "PUR"
+    },
+    {
+     "block_name": "Sheohar",
+     "block_code": "SHE"
+    },
+    {
+     "block_name": "Tariani Chowk",
+     "block_code": "TAR"
+    }
+   ]
+  },
+  {
+   "district_name": "Sitamarhi",
+   "district_code": "SIT",
+   "blocks": [
+    {
+     "block_name": "Bairgania",
+     "block_code": "BAI"
+    },
+    {
+     "block_name": "Bajpatti",
+     "block_code": "BAJ"
+    },
+    {
+     "block_name": "Bathnaha",
+     "block_code": "BAT"
+    },
+    {
+     "block_name": "Belsand",
+     "block_code": "BEL"
+    },
+    {
+     "block_name": "Bokhra",
+     "block_code": "BOK"
+    },
+    {
+     "block_name": "Choraut",
+     "block_code": "CHO"
+    },
+    {
+     "block_name": "Dumra",
+     "block_code": "DUM"
+    },
+    {
+     "block_name": "Majorganj",
+     "block_code": "MAJ"
+    },
+    {
+     "block_name": "Nanpur",
+     "block_code": "NAN"
+    },
+    {
+     "block_name": "Parihar",
+     "block_code": "PAR"
+    },
+    {
+     "block_name": "Parsauni",
+     "block_code": "PAS"
+    },
+    {
+     "block_name": "Pupri",
+     "block_code": "PUP"
+    },
+    {
+     "block_name": "Riga",
+     "block_code": "RIG"
+    },
+    {
+     "block_name": "Runni Saidpur",
+     "block_code": "RUN"
+    },
+    {
+     "block_name": "Sonbarsa",
+     "block_code": "SON"
+    },
+    {
+     "block_name": "Suppi",
+     "block_code": "SUP"
+    },
+    {
+     "block_name": "Sursand",
+     "block_code": "SUR"
+    }
+   ]
+  },
+  {
+   "district_name": "Siwan",
+   "district_code": "SIW",
+   "blocks": [
+    {
+     "block_name": "Andar",
+     "block_code": "AND"
+    },
+    {
+     "block_name": "Barharia",
+     "block_code": "BAR"
+    },
+    {
+     "block_name": "Basantpur",
+     "block_code": "BAS"
+    },
+    {
+     "block_name": "Bhagwanpur Hat",
+     "block_code": "BHA"
+    },
+    {
+     "block_name": "Darauli",
+     "block_code": "DAR"
+    },
+    {
+     "block_name": "Daraundha",
+     "block_code": "DAA"
+    },
+    {
+     "block_name": "Goriakothi",
+     "block_code": "GOR"
+    },
+    {
+     "block_name": "Guthani",
+     "block_code": "GUT"
+    },
+    {
+     "block_name": "Hasanpura",
+     "block_code": "HAS"
+    },
+    {
+     "block_name": "Hussainganj",
+     "block_code": "HUS"
+    },
+    {
+     "block_name": "Lakri Nabiganj",
+     "block_code": "LAK"
+    },
+    {
+     "block_name": "Maharajganj",
+     "block_code": "MAH"
+    },
+    {
+     "block_name": "Mairwa",
+     "block_code": "MAI"
+    },
+    {
+     "block_name": "Nautan",
+     "block_code": "NAU"
+    },
+    {
+     "block_name": "Panchrukhi",
+     "block_code": "PAN"
+    },
+    {
+     "block_name": "Raghunathpur",
+     "block_code": "RAG"
+    },
+    {
+     "block_name": "Siswan",
+     "block_code": "SIS"
+    },
+    {
+     "block_name": "Siwan",
+     "block_code": "SIW"
+    },
+    {
+     "block_name": "Ziradei",
+     "block_code": "ZIR"
+    }
+   ]
+  },
+  {
+   "district_name": "Supaul",
+   "district_code": "SUP",
+   "blocks": [
+    {
+     "block_name": "Basantpur",
+     "block_code": "BAS"
+    },
+    {
+     "block_name": "Chhatapur",
+     "block_code": "CHH"
+    },
+    {
+     "block_name": "Kishanpur",
+     "block_code": "KIS"
+    },
+    {
+     "block_name": "Marauna",
+     "block_code": "MAR"
+    },
+    {
+     "block_name": "Nirmali",
+     "block_code": "NIR"
+    },
+    {
+     "block_name": "Pipra",
+     "block_code": "PIP"
+    },
+    {
+     "block_name": "Pratapganj",
+     "block_code": "PRA"
+    },
+    {
+     "block_name": "Raghopur",
+     "block_code": "RAG"
+    },
+    {
+     "block_name": "Saraigarh-Bhaptiyahi",
+     "block_code": "SAR"
+    },
+    {
+     "block_name": "Supaul",
+     "block_code": "SUP"
+    },
+    {
+     "block_name": "Triveniganj",
+     "block_code": "TRI"
+    }
+   ]
+  },
+  {
+   "district_name": "Vaishali",
+   "district_code": "VAI",
+   "blocks": [
+    {
+     "block_name": "Bhagwanpur",
+     "block_code": "BHA"
+    },
+    {
+     "block_name": "Bidupur",
+     "block_code": "BID"
+    },
+    {
+     "block_name": "Chehra Kalan",
+     "block_code": "CHE"
+    },
+    {
+     "block_name": "Desari",
+     "block_code": "DES"
+    },
+    {
+     "block_name": "Goraul",
+     "block_code": "GOR"
+    },
+    {
+     "block_name": "Hajipur",
+     "block_code": "HAJ"
+    },
+    {
+     "block_name": "Jandaha",
+     "block_code": "JAN"
+    },
+    {
+     "block_name": "Lalganj",
+     "block_code": "LAL"
+    },
+    {
+     "block_name": "Mahnar",
+     "block_code": "MAH"
+    },
+    {
+     "block_name": "Mahua",
+     "block_code": "MAU"
+    },
+    {
+     "block_name": "Patedhi Belsar",
+     "block_code": "PAT"
+    },
+    {
+     "block_name": "Patepur",
+     "block_code": "PAE"
+    },
+    {
+     "block_name": "Raghopur",
+     "block_code": "RAG"
+    },
+    {
+     "block_name": "Rajapakar",
+     "block_code": "RAJ"
+    },
+    {
+     "block_name": "Sahdei Buzurg",
+     "block_code": "SAH"
+    },
+    {
+     "block_name": "Vaishali",
+     "block_code": "VAI"
+    }
+   ]
+  },
+  {
+   "district_name": "West Champaran",
+   "district_code": "WES",
+   "blocks": [
+    {
+     "block_name": "Bagaha",
+     "block_code": "BAG"
+    },
+    {
+     "block_name": "Bairia",
+     "block_code": "BAI"
+    },
+    {
+     "block_name": "Bettiah",
+     "block_code": "BET"
+    },
+    {
+     "block_name": "Bhitaha",
+     "block_code": "BHI"
+    },
+    {
+     "block_name": "Chanpatia",
+     "block_code": "CHA"
+    },
+    {
+     "block_name": "Gaunaha",
+     "block_code": "GAU"
+    },
+    {
+     "block_name": "Jogapatti",
+     "block_code": "JOG"
+    },
+    {
+     "block_name": "Lauriya Nandangarh",
+     "block_code": "LAU"
+    },
+    {
+     "block_name": "Madhubani",
+     "block_code": "MAD"
+    },
+    {
+     "block_name": "Mainatand",
+     "block_code": "MAI"
+    },
+    {
+     "block_name": "Majhaulia",
+     "block_code": "MAJ"
+    },
+    {
+     "block_name": "Narkatiaganj",
+     "block_code": "NAR"
+    },
+    {
+     "block_name": "Nautan",
+     "block_code": "NAU"
+    },
+    {
+     "block_name": "Piprasi",
+     "block_code": "PIP"
+    },
+    {
+     "block_name": "Ramnagar",
+     "block_code": "RAM"
+    },
+    {
+     "block_name": "Sidhaw",
+     "block_code": "SID"
+    },
+    {
+     "block_name": "Sikta",
+     "block_code": "SIK"
+    },
+    {
+     "block_name": "Thakrahan",
+     "block_code": "THA"
+    }
+   ]
+  }
+ ]
+}

@@ -202,7 +202,7 @@ const state={
   route:"home", ready:false,
   clientId:"", exams:[], exam:null,        // current exam
   idToken:null, identity:null, role:"Parent",
-  centers:[], centerTree:{},
+  centers:null, geo:null,
   reg:{step:0, data:{}, result:null},
   lookup:{result:null, error:null},
   student:{data:null, admit:null, error:null},
@@ -447,49 +447,54 @@ function saveStudent(){
   d.name=val('sname');d.guardian=val('fname');d.school=val('school');d.dob=val('dob');
   if(!d.name||!d.guardian||!d.cls||!d.school){toast('Please fill name, guardian, class and school',true);return;}
   if(!d.medium)d.medium='Hindi';
-  state.reg.step=2;loadCenters();render();
+  state.reg.step=2;loadLocationData();render();
 }
-async function loadCenters(){
-  if(state.centers.length)return;
-  try{state.centers=await api('/api/centers'+(state.exam?('?exam_id='+encodeURIComponent(state.exam.exam_id)):''));buildCenterTree();render();}
-  catch(e){toast('Could not load centres: '+e.message,true);}
-}
-function buildCenterTree(){
-  const t={};
-  state.centers.forEach(c=>{
-    const D=t[c.district_name]=t[c.district_name]||{code:c.district_code,blocks:{}};
-    const B=D.blocks[c.block_name]=D.blocks[c.block_name]||{code:c.block_code,pans:{}};
-    const P=B.pans[c.panchayat_name]=B.pans[c.panchayat_name]||{code:c.panchayat_code,centers:[]};
-    P.centers.push(c);
-  });
-  state.centerTree=t;
+async function loadLocationData(){
+  try{
+    if(state.geo===null) state.geo=await api('/api/geo');
+    if(state.centers===null) state.centers=await api('/api/centers'+(state.exam?('?exam_id='+encodeURIComponent(state.exam.exam_id)):''));
+    render();
+  }catch(e){toast('Could not load location data: '+e.message,true);}
 }
 function regLocation(){
-  const d=state.reg.data,t=state.centerTree;
-  if(!state.centers.length)return `<p><span class="spin"></span> Loading exam centres…</p>`;
-  const distOpts=`<option value="">Select district</option>`+Object.keys(t).map(x=>`<option ${d.district===x?'selected':''}>${esc(x)}</option>`).join('');
-  let blockOpts=`<option value="">Select block</option>`,panOpts=`<option value="">Select panchayat</option>`,center=null;
-  if(d.district&&t[d.district]){blockOpts+=Object.keys(t[d.district].blocks).map(x=>`<option ${d.block===x?'selected':''}>${esc(x)}</option>`).join('');
-    if(d.block&&t[d.district].blocks[d.block]){panOpts+=Object.keys(t[d.district].blocks[d.block].pans).map(x=>`<option ${d.panchayat===x?'selected':''}>${esc(x)}</option>`).join('');
-      if(d.panchayat&&t[d.district].blocks[d.block].pans[d.panchayat]){const cs=t[d.district].blocks[d.block].pans[d.panchayat].centers;center=cs[0];state.reg.data._center=center;}}}
+  const d=state.reg.data;
+  if(state.geo===null||state.centers===null)return `<p><span class="spin"></span> Loading districts & centres…</p>`;
+  const districts=(state.geo.districts)||[];
+  const distOpts=`<option value="">Select district</option>`+districts.map(x=>`<option ${d.district===x.district_name?'selected':''}>${esc(x.district_name)}</option>`).join('');
+  const distObj=districts.find(x=>x.district_name===d.district);
+  let blockOpts=`<option value="">Select block</option>`;
+  if(distObj)blockOpts+=distObj.blocks.map(b=>`<option ${d.block===b.block_name?'selected':''}>${esc(b.block_name)}</option>`).join('');
+  // Centres physically in the chosen district+block gate the exam seat.
+  let centreBlock='';
+  if(d.district&&d.block){
+    const inBlock=state.centers.filter(c=>c.district_name===d.district&&c.block_name===d.block);
+    const open=inBlock.filter(c=>c.seats_left>0);
+    if(open.length){
+      const cOpts=open.map(c=>`<option value="${esc(c.center_id)}" ${d.center_id===c.center_id?'selected':''}>${esc(c.name)} (${c.seats_left} seats left)</option>`).join('');
+      centreBlock=`<div class="field"><label>Exam centre <span class="req">*</span></label>
+        <select class="input" onchange="setLoc('center_id',this.value)"><option value="">Select centre</option>${cOpts}</select></div>`;
+    }else if(inBlock.length){
+      centreBlock=`<div class="card pad" style="background:#f8e6e0;box-shadow:none;border:1px dashed var(--danger);color:var(--danger);margin-bottom:16px">The centre in this block is full. Please pick a nearby block or contact your coordinator.</div>`;
+    }else{
+      centreBlock=`<div class="card pad" style="background:#faf8f2;box-shadow:none;border-style:dashed;margin-bottom:16px"><b style="color:var(--indigo)">No exam centre in this block yet.</b><div class="hint" style="margin-top:4px">Centres are being added block by block. Try a nearby block, or check back soon.</div></div>`;
+    }
+  }
+  const chosen=state.centers.find(c=>c.center_id===d.center_id&&c.district_name===d.district&&c.block_name===d.block);
   return `<h3 style="font-size:20px;color:var(--indigo);margin-bottom:6px">Where is the student?</h3>
-  <p class="muted" style="font-size:14px;margin:0 0 18px">This decides your exam centre and how you're ranked. Structured, not free text.</p>
+  <p class="muted" style="font-size:14px;margin:0 0 18px">Pick your district and block, then choose an available exam centre. This also sets how you're ranked.</p>
   <div class="field"><label>State <span class="req">*</span></label><select class="input" disabled><option>Bihar</option></select></div>
   <div class="field"><label>District <span class="req">*</span></label><select class="input" onchange="setLoc('district',this.value)">${distOpts}</select></div>
-  <div class="row2">
-    <div class="field"><label>Block <span class="req">*</span></label><select class="input" onchange="setLoc('block',this.value)" ${!d.district?'disabled':''}>${blockOpts}</select></div>
-    <div class="field"><label>Panchayat <span class="req">*</span></label><select class="input" onchange="setLoc('panchayat',this.value)" ${!d.block?'disabled':''}>${panOpts}</select></div>
-  </div>
-  <div class="card pad" style="background:#faf8f2;box-shadow:none;border-style:dashed;margin:6px 0 18px">
-    <div style="font-size:13px;color:var(--muted)">Assigned exam centre</div>
-    <div style="font-weight:600;color:var(--indigo);margin-top:2px">${center?esc(center.name)+' · '+(center.seats_left)+' seats left':'Select location to see your centre'}</div>
-  </div>
-  <button class="btn primary block lg" onclick="finishReg()" ${(!center)?'disabled':''}>Submit registration →</button>`;
+  <div class="field"><label>Block <span class="req">*</span></label><select class="input" onchange="setLoc('block',this.value)" ${!d.district?'disabled':''}>${blockOpts}</select></div>
+  ${centreBlock}
+  <button class="btn primary block lg" onclick="finishReg()" ${(!chosen)?'disabled':''}>Submit registration →</button>`;
 }
-function setLoc(k,v){const d=state.reg.data;d[k]=v;if(k==='district'){d.block='';d.panchayat='';}if(k==='block'){d.panchayat='';}render();}
+function setLoc(k,v){const d=state.reg.data;d[k]=v;if(k==='district'){d.block='';d.center_id='';}if(k==='block'){d.center_id='';}render();}
 async function finishReg(){
-  const d=state.reg.data,c=d._center;
-  if(!c){toast('Pick a centre first',true);return;}
+  const d=state.reg.data;
+  const c=state.centers.find(x=>x.center_id===d.center_id);
+  if(!c){toast('Pick an exam centre first',true);return;}
+  d._centerName=c.name;
+  // Location fields come from the chosen centre (authoritative + consistent ranking).
   const payload={exam_id:state.exam.exam_id,name:d.name,guardian_name:d.guardian,dob:d.dob||null,gender:d.gender||null,
     school_name:d.school,medium:d.medium||'Hindi',cls:Number(d.cls),
     district_name:c.district_name,district_code:c.district_code,block_name:c.block_name,block_code:c.block_code,
@@ -516,7 +521,7 @@ function confirmation(){
       <div class="admit kv" style="border:0;box-shadow:none;margin:20px 0 4px;text-align:left">
         <div class="k">Student ID</div><div class="v">${esc(r.student_id)}</div>
         <div class="k">Class</div><div class="v">Class ${esc(d.cls)}</div>
-        <div class="k">Centre</div><div class="v">${esc(d._center?d._center.name:'')}</div>
+        <div class="k">Centre</div><div class="v">${esc(d._centerName||'')}</div>
         <div class="k">Exam date</div><div class="v">${esc(fmtDate(state.exam.exam_date))}</div>
       </div>
       <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px">
