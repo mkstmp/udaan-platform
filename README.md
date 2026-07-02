@@ -14,14 +14,25 @@ same-origin, so the whole product runs as **one Cloud Run service**.
 
 | Thing | Value |
 |---|---|
-| **App URL** | https://udaan-api-md45haetfq-el.a.run.app |
-| GCP project | `udaan-platform-260701` (region `asia-south1`) |
+| **App URL (primary)** | https://udaan-platform-260701.web.app (Firebase Hosting → Cloud Run) |
+| Cloud Run URL (direct) | https://udaan-api-md45haetfq-el.a.run.app |
+| GCP project | `udaan-platform-260701` (region `asia-south1` — Mumbai) |
 | Firestore | Native, `asia-south1` (seeded: 1 exam, 2 centres, 10 papers, admin allowlist) |
 | Sample-papers bucket | `gs://udaan-platform-260701-udaan-papers` (public) |
 | Image | `asia-south1-docker.pkg.dev/udaan-platform-260701/udaan/udaan-api` |
+| Admins | `mkssmanish@gmail.com`, `mukesh.sonepur@gmail.com`, `rajnish.tarwan@gmail.com` |
 | Budget alert | $25/mo (50/90/100% thresholds) |
 
 Public pages work now (home, sample papers, student result lookup, leaderboard).
+
+### Custom domain (Mumbai-safe path)
+
+Cloud Run's built-in `run domain-mappings` isn't offered in `asia-south1`, so we
+front the service with **Firebase Hosting** (`firebase.json` → `rewrites` → Cloud
+Run). This works from any region — verified end-to-end from Mumbai. To attach a
+real domain: **Firebase Console → Hosting → Add custom domain**, then add the DNS
+records it shows (managed TLS issues automatically). Redeploy hosting after code
+changes with `firebase deploy --only hosting`.
 
 ### ⚠️ One manual step to enable Google sign-in (register / adult / admin)
 
@@ -33,7 +44,10 @@ the Console:
    support email → add yourself under *Test users* (or Publish).
 2. **APIs & Services → Credentials → Create credentials → OAuth client ID →
    Web application.**
-   - **Authorized JavaScript origins:** `https://udaan-api-md45haetfq-el.a.run.app`
+   - **Authorized JavaScript origins** (add all you'll use):
+     `https://udaan-platform-260701.web.app`,
+     `https://udaan-api-md45haetfq-el.a.run.app`,
+     and your custom domain once added.
    - (No redirect URI needed — we verify the ID token, not a code exchange.)
 3. Copy the **Client ID** and plug it in (no rebuild, ~30s redeploy):
 

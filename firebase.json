@@ -2,5 +2,12 @@
   "firestore": {
     "rules": "firestore/firestore.rules",
     "indexes": "firestore/firestore.indexes.json"
+  },
+  "hosting": {
+    "public": "hosting_public",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      { "source": "**", "run": { "serviceId": "udaan-api", "region": "asia-south1" } }
+    ]
   }
 }
