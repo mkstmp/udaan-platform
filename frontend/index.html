@@ -436,8 +436,12 @@ function regStudent(){
   <div class="field"><label>Gender</label><div class="seg">${genOpts}</div></div>
   <button class="btn primary block lg" onclick="saveStudent()">Continue →</button>`;
 }
-function setReg(k,v){state.reg.data[k]=v;render();}
 function val(id){const e=document.getElementById(id);return e?e.value.trim():'';}
+// Preserve typed text before a seg-button click re-renders the student step.
+function snapStudentInputs(){const d=state.reg.data;
+  [['sname','name'],['fname','guardian'],['school','school'],['dob','dob']].forEach(([id,k])=>{
+    const el=document.getElementById(id);if(el)d[k]=el.value.trim();});}
+function setReg(k,v){snapStudentInputs();state.reg.data[k]=v;render();}
 function saveStudent(){
   const d=state.reg.data;
   d.name=val('sname');d.guardian=val('fname');d.school=val('school');d.dob=val('dob');

@@ -4,10 +4,10 @@
     "indexes": "firestore/firestore.indexes.json"
   },
   "hosting": {
-    "public": "hosting_public",
+    "public": "frontend",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
-      { "source": "**", "run": { "serviceId": "udaan-api", "region": "asia-south1" } }
+      { "source": "/api/**", "run": { "serviceId": "udaan-api", "region": "asia-south1" } }
     ]
   }
 }

@@ -25,14 +25,19 @@ same-origin, so the whole product runs as **one Cloud Run service**.
 
 Public pages work now (home, sample papers, student result lookup, leaderboard).
 
-### Custom domain (Mumbai-safe path)
+### Serving model + custom domain (Mumbai-safe path)
 
-Cloud Run's built-in `run domain-mappings` isn't offered in `asia-south1`, so we
-front the service with **Firebase Hosting** (`firebase.json` → `rewrites` → Cloud
-Run). This works from any region — verified end-to-end from Mumbai. To attach a
-real domain: **Firebase Console → Hosting → Add custom domain**, then add the DNS
-records it shows (managed TLS issues automatically). Redeploy hosting after code
-changes with `firebase deploy --only hosting`.
+**Firebase Hosting** serves the SPA (`frontend/index.html`) as a static file and
+rewrites `/api/**` to the Cloud Run service — same-origin, no CORS. Cloud Run's
+built-in `run domain-mappings` isn't offered in `asia-south1`; Hosting works from
+any region (verified end-to-end from Mumbai).
+
+- **Ship a frontend change:** `firebase deploy --only hosting` (seconds).
+- **Ship a backend change:** rebuild the image via `cloudbuild.yaml` (the image
+  also bundles a copy of the SPA so the raw `run.app` URL still works standalone,
+  but **`…web.app` is the canonical app URL**).
+- **Custom domain:** Firebase Console → Hosting → Add custom domain → add the DNS
+  records it shows (managed TLS issues automatically).
 
 ### ✅ Google sign-in is configured
 
