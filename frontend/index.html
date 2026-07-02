@@ -220,7 +220,7 @@ const state={
   student:{data:null, admit:null, error:null},
   admit:{data:null},
   leaderboard:{cls:9, scope:"district", value:null, rows:null},
-  admin:{page:"overview", regs:null, results:null, marksOut:null, centers:null, centerForm:{}, settings:null, studentDetail:null, filters:{cls:"all",district:"all"}},
+  admin:{page:"overview", examId:null, regs:null, results:null, marksOut:null, centers:null, centerForm:{}, settings:null, studentDetail:null, filters:{cls:"all",district:"all"}},
 };
 
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
@@ -293,6 +293,21 @@ function examPicker(onChangeExtra){
   return `<div class="field" style="max-width:380px"><label>Exam</label>
     <select class="input" onchange="state.viewExamId=this.value;${onChangeExtra||''}render()">
       ${ex.map(e=>`<option value="${esc(e.exam_id)}" ${cur&&cur.exam_id===e.exam_id?'selected':''}>${esc(e.name)}${e.results_published?' — results out':''}</option>`).join('')}
+    </select></div>`;
+}
+// Which exam the admin read-only screens (Overview/Registrations/Results) show.
+// Defaults to the live exam; switchable to the DEMO exam when test mode is on.
+function getAdminExam(){
+  const ex=state.exams||[];
+  if(state.admin.examId){const e=ex.find(x=>x.exam_id===state.admin.examId);if(e)return e;}
+  return state.exam||ex[0]||null;
+}
+function adminExamBar(){
+  const ex=state.exams||[];if(ex.length<2)return '';
+  const cur=getAdminExam();
+  return `<div class="field" style="max-width:420px;margin-bottom:18px"><label>Viewing exam</label>
+    <select class="input" onchange="state.admin.examId=this.value;state.admin.regs=null;state.admin.results=null;render()">
+      ${ex.map(e=>`<option value="${esc(e.exam_id)}" ${cur&&cur.exam_id===e.exam_id?'selected':''}>${esc(e.name)}${e.demo?' — demo':''}</option>`).join('')}
     </select></div>`;
 }
 
@@ -853,10 +868,10 @@ function admin(){
   <div class="admin-shell">
     <aside class="side"><div class="brand2">${KITE('#F4A300','#1A2E5C')} Admin</div>
       ${nav.map(([k,l,ic])=>`<a class="${p===k?'active':''}" onclick="state.admin.page='${k}';render()">${icon(ic)} ${l}</a>`).join('')}</aside>
-    <main class="admin-main">${main}</main>
+    <main class="admin-main">${(p==='overview'||p==='registrations'||p==='results')?adminExamBar():''}${main}</main>
   </div>${studentDetailModal()}`;
 }
-async function loadRegs(){try{state.admin.regs=await api('/api/admin/registrations?exam_id='+encodeURIComponent(state.exam.exam_id),{auth:true});}catch(e){state.admin.regs=[];toast(e.message,true);}render();}
+async function loadRegs(){const ae=getAdminExam();try{state.admin.regs=await api('/api/admin/registrations?exam_id='+encodeURIComponent(ae.exam_id),{auth:true});}catch(e){state.admin.regs=[];toast(e.message,true);}render();}
 async function loadSettings(){try{state.admin.settings=await api('/api/admin/settings',{auth:true});}catch(e){state.admin.settings={demo_visible:false};}render();}
 async function toggleDemo(){
   const on=!(state.admin.settings&&state.admin.settings.demo_visible);
@@ -876,22 +891,23 @@ function demoToggleCard(){
   </div>`;
 }
 function adminOverview(){
-  if(!state.exam)return `<p class="muted">No exam configured.</p>`;
+  const ae=getAdminExam();
+  if(!ae)return `<p class="muted">No exam configured.</p>`;
   if(state.admin.regs===null){loadRegs();return `<p><span class="spin"></span> Loading…</p>`;}
   const regs=state.admin.regs,total=regs.length;
-  const clsList=(state.exam.eligible_classes&&state.exam.eligible_classes.length)?state.exam.eligible_classes:[7,8,9,10];
+  const clsList=(ae.eligible_classes&&ae.eligible_classes.length)?ae.eligible_classes:[7,8,9,10];
   const byClass=clsList.map(c=>[c,regs.filter(r=>r.class==c).length]);
   const dists=[...new Set(regs.map(r=>r.district_name))];
   const uploaded=regs.filter(r=>r.marks_obtained!=null).length;
   const maxC=Math.max(1,...byClass.map(x=>x[1]));
   return `<h2 style="font-size:26px;color:var(--indigo);margin-bottom:4px">Overview</h2>
-  <p class="muted" style="margin:0 0 18px">${esc(state.exam.name)} · ${esc(fmtDate(state.exam.exam_date))} · <span class="tag ${state.exam.status==='open'?'open':'closed'}">${esc(state.exam.status)}</span></p>
+  <p class="muted" style="margin:0 0 18px">${esc(ae.name)} · ${esc(fmtDate(ae.exam_date))} · <span class="tag ${ae.status==='open'?'open':'closed'}">${esc(ae.status)}</span></p>
   ${demoToggleCard()}
   <div class="stat-grid">
     <div class="stat"><div class="l">Registrations</div><div class="v">${total}</div></div>
     <div class="stat"><div class="l">Districts</div><div class="v">${dists.length}</div></div>
     <div class="stat"><div class="l">Marks uploaded</div><div class="v">${uploaded}</div><div class="d">${total?Math.round(uploaded/total*100):0}%</div></div>
-    <div class="stat"><div class="l">Published</div><div class="v">${state.exam.results_published?'Yes':'No'}</div></div>
+    <div class="stat"><div class="l">Published</div><div class="v">${ae.results_published?'Yes':'No'}</div></div>
   </div>
   <div class="grid2">
     <div class="card pad"><h4 style="font-size:16px;margin-bottom:14px">Registrations by class</h4>
@@ -909,7 +925,8 @@ function adminOverview(){
 function adminRegs(){
   if(state.admin.regs===null){loadRegs();return `<p><span class="spin"></span> Loading…</p>`;}
   const f=state.admin.filters;let rows=state.admin.regs.slice();
-  const clsList=(state.exam.eligible_classes&&state.exam.eligible_classes.length)?state.exam.eligible_classes:[7,8,9,10];
+  const ae=getAdminExam();
+  const clsList=(ae&&ae.eligible_classes&&ae.eligible_classes.length)?ae.eligible_classes:[7,8,9,10];
   const dists=[...new Set(state.admin.regs.map(r=>r.district_name))];
   if(f.cls!=='all')rows=rows.filter(r=>r.class==f.cls);
   if(f.district!=='all')rows=rows.filter(r=>r.district_name===f.district);
@@ -973,7 +990,7 @@ function studentDetailModal(){
   </div></div>`;
 }
 async function exportRegs(){
-  try{const res=await fetch(API+'/api/admin/registrations?exam_id='+encodeURIComponent(state.exam.exam_id)+'&fmt=csv',{headers:{'Authorization':'Bearer '+state.idToken}});
+  try{const res=await fetch(API+'/api/admin/registrations?exam_id='+encodeURIComponent(getAdminExam().exam_id)+'&fmt=csv',{headers:{'Authorization':'Bearer '+state.idToken}});
     if(!res.ok)throw new Error('Export failed ('+res.status+')');
     const blob=await res.blob();const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='registrations.csv';a.click();URL.revokeObjectURL(a.href);toast('CSV downloaded');}
   catch(e){toast(e.message,true);}
@@ -1020,15 +1037,15 @@ async function publishResults(){
   catch(e){toast(e.message,true);}
 }
 async function loadAdminResults(){
-  const f=state.admin.filters;let q='?exam_id='+encodeURIComponent(state.exam.exam_id);
+  const f=state.admin.filters;let q='?exam_id='+encodeURIComponent(getAdminExam().exam_id);
   if(f.cls!=='all')q+='&cls='+f.cls;if(f.district!=='all')q+='&district='+encodeURIComponent(f.district);
   try{state.admin.results=await api('/api/admin/results'+q,{auth:true});}catch(e){state.admin.results=null;toast(e.message,true);}render();
 }
 function adminResults(){
-  const f=state.admin.filters;
+  const f=state.admin.filters;const ae=getAdminExam();
   if(state.admin.results===null||state.admin.results===undefined){loadAdminResults();return `<p><span class="spin"></span> Loading…</p>`;}
   const R=state.admin.results;
-  const clsList=(state.exam.eligible_classes&&state.exam.eligible_classes.length)?state.exam.eligible_classes:[7,8,9,10];
+  const clsList=(ae&&ae.eligible_classes&&ae.eligible_classes.length)?ae.eligible_classes:[7,8,9,10];
   const dists=[...new Set((state.admin.regs||[]).map(r=>r.district_name))];
   const dist=R.distribution||{};const order=["<40","40-59","60-74","75-89","90+"];const maxN=Math.max(1,...order.map(k=>dist[k]||0));
   return `<h2 style="font-size:26px;color:var(--indigo);margin-bottom:4px">Results &amp; slices</h2>
