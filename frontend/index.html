@@ -202,7 +202,7 @@ const state={
   route:"home", ready:false,
   clientId:"", exams:[], exam:null,        // current exam
   idToken:null, identity:null, role:"Parent",
-  centers:null, geo:null,
+  centers:null, geo:null, panchayats:{},
   reg:{step:0, data:{}, result:null},
   lookup:{result:null, error:null},
   student:{data:null, admit:null, error:null},
@@ -456,6 +456,15 @@ async function loadLocationData(){
     render();
   }catch(e){toast('Could not load location data: '+e.message,true);}
 }
+function panKey(dist,blk){return dist+'||'+blk;}
+async function loadPanchayats(dist,blk){
+  const k=panKey(dist,blk);
+  if(state.panchayats[k]!==undefined)return;
+  state.panchayats[k]=null; // mark loading
+  try{state.panchayats[k]=await api('/api/geo/panchayats?district='+encodeURIComponent(dist)+'&block='+encodeURIComponent(blk));}
+  catch(e){state.panchayats[k]=[];toast(e.message,true);}
+  render();
+}
 function regLocation(){
   const d=state.reg.data;
   if(state.geo===null||state.centers===null)return `<p><span class="spin"></span> Loading districts & centres…</p>`;
@@ -464,6 +473,22 @@ function regLocation(){
   const distObj=districts.find(x=>x.district_name===d.district);
   let blockOpts=`<option value="">Select block</option>`;
   if(distObj)blockOpts+=distObj.blocks.map(b=>`<option ${d.block===b.block_name?'selected':''}>${esc(b.block_name)}</option>`).join('');
+  // Panchayat (gram panchayat) — the student's home GP, lazy-loaded per block. Drives panchayat-level rank.
+  let panBlock='';
+  if(d.district&&d.block){
+    const k=panKey(d.district,d.block),list=state.panchayats[k];
+    if(list===undefined){loadPanchayats(d.district,d.block);}
+    if(list===undefined||list===null){
+      panBlock=`<div class="field"><label>Panchayat</label><select class="input" disabled><option>Loading panchayats…</option></select></div>`;
+    }else if(list.length){
+      const pOpts=list.map(p=>`<option value="${esc(p.panchayat_code)}" ${d.panchayat_code===p.panchayat_code?'selected':''}>${esc(p.panchayat_name)}</option>`).join('');
+      panBlock=`<div class="field"><label>Panchayat <span class="req">*</span></label>
+        <select class="input" onchange="setPanchayat(this.value)"><option value="">Select your gram panchayat</option>${pOpts}</select>
+        <div class="hint">Your home panchayat — used for your Panchayat-level rank.</div></div>`;
+    }else{
+      panBlock=`<div class="hint" style="margin-bottom:12px">No gram panchayats listed for this block; your block will be used for ranking.</div>`;
+    }
+  }
   // Centres physically in the chosen district+block gate the exam seat.
   let centreBlock='';
   if(d.district&&d.block){
@@ -480,25 +505,39 @@ function regLocation(){
     }
   }
   const chosen=state.centers.find(c=>c.center_id===d.center_id&&c.district_name===d.district&&c.block_name===d.block);
+  const panList=state.panchayats[panKey(d.district,d.block)];
+  const panNeeded=Array.isArray(panList)&&panList.length>0;
+  const canSubmit=chosen&&(!panNeeded||d.panchayat_code);
   return `<h3 style="font-size:20px;color:var(--indigo);margin-bottom:6px">Where is the student?</h3>
-  <p class="muted" style="font-size:14px;margin:0 0 18px">Pick your district and block, then choose an available exam centre. This also sets how you're ranked.</p>
+  <p class="muted" style="font-size:14px;margin:0 0 18px">Pick district → block → your panchayat, then an available exam centre. This sets how you're ranked.</p>
   <div class="field"><label>State <span class="req">*</span></label><select class="input" disabled><option>Bihar</option></select></div>
   <div class="field"><label>District <span class="req">*</span></label><select class="input" onchange="setLoc('district',this.value)">${distOpts}</select></div>
   <div class="field"><label>Block <span class="req">*</span></label><select class="input" onchange="setLoc('block',this.value)" ${!d.district?'disabled':''}>${blockOpts}</select></div>
+  ${panBlock}
   ${centreBlock}
-  <button class="btn primary block lg" onclick="finishReg()" ${(!chosen)?'disabled':''}>Submit registration →</button>`;
+  <button class="btn primary block lg" onclick="finishReg()" ${(!canSubmit)?'disabled':''}>Submit registration →</button>`;
 }
-function setLoc(k,v){const d=state.reg.data;d[k]=v;if(k==='district'){d.block='';d.center_id='';}if(k==='block'){d.center_id='';}render();}
+function setPanchayat(code){const d=state.reg.data;const list=state.panchayats[panKey(d.district,d.block)]||[];
+  const p=list.find(x=>x.panchayat_code===code);d.panchayat_code=code;d.panchayat_name=p?p.panchayat_name:'';render();}
+function setLoc(k,v){const d=state.reg.data;d[k]=v;
+  if(k==='district'){d.block='';d.center_id='';d.panchayat_code='';d.panchayat_name='';}
+  if(k==='block'){d.center_id='';d.panchayat_code='';d.panchayat_name='';}
+  render();}
 async function finishReg(){
   const d=state.reg.data;
   const c=state.centers.find(x=>x.center_id===d.center_id);
   if(!c){toast('Pick an exam centre first',true);return;}
   d._centerName=c.name;
-  // Location fields come from the chosen centre (authoritative + consistent ranking).
+  const distObj=(state.geo.districts||[]).find(x=>x.district_name===d.district);
+  const blkObj=distObj&&distObj.blocks.find(b=>b.block_name===d.block);
+  // Home district/block from the geo selection; panchayat from the chosen GP
+  // (falls back to the centre's panchayat if the block has no GP list). Centre = venue.
   const payload={exam_id:state.exam.exam_id,name:d.name,guardian_name:d.guardian,dob:d.dob||null,gender:d.gender||null,
     school_name:d.school,medium:d.medium||'Hindi',cls:Number(d.cls),
-    district_name:c.district_name,district_code:c.district_code,block_name:c.block_name,block_code:c.block_code,
-    panchayat_name:c.panchayat_name,panchayat_code:c.panchayat_code,center_id:c.center_id};
+    district_name:d.district,district_code:(distObj&&distObj.district_code)||c.district_code,
+    block_name:d.block,block_code:(blkObj&&blkObj.block_code)||c.block_code,
+    panchayat_name:d.panchayat_name||c.panchayat_name,panchayat_code:d.panchayat_code||c.panchayat_code,
+    center_id:c.center_id};
   toast('Submitting…');
   try{const r=await api('/api/adult/students',{method:'POST',body:payload,auth:true});state.reg.result=r;state.reg.step=3;render();}
   catch(e){toast('Registration failed: '+e.message,true);}

@@ -25,20 +25,28 @@ same-origin, so the whole product runs as **one Cloud Run service**.
 
 Public pages work now (home, sample papers, student result lookup, leaderboard).
 
-### Bihar geography (registration dropdowns)
+### Bihar geography (registration dropdowns) — LGD-sourced
 
-`backend/app/bihar_geo.json` holds all **38 districts → 532 blocks** (with
-generated stable codes), served read-only at **`GET /api/geo`**. Registration
-shows statewide District/Block dropdowns from this; the **exam centre** (from
-`centers/*`) is what actually seats a student — blocks without a centre show
-"no centre yet" and can't submit. Add centres as venues are confirmed.
+Full official hierarchy from the **Local Government Directory** (lgdirectory.gov.in,
+1 Jul 2026 snapshot via the `ramSeraph/opendata` mirror):
+**38 districts → 534 blocks (Panchayat Samiti) → 8,051 gram panchayats.**
 
-> Source: the supplied *Bihar Dis Block details* sheets (district → block).
-> **Purnia** was missing from the source, so its 13 blocks were filled from the
-> standard administrative list — **verify before launch**. District names were
-> canonicalised (e.g. Gayaji→Gaya, Patliputra Patna→Patna) and codes generated
-> (the sheet had none); ranking groups by *name*, so codes are cosmetic except
-> the district code used in `student_id`.
+- `backend/app/bihar_geo.json` (~26 KB) — districts + blocks → **`GET /api/geo`**.
+- `backend/app/bihar_panchayats.json` (~452 KB) — district → block → gram
+  panchayats → **`GET /api/geo/panchayats?district=&block=`** (lazy-loaded per
+  block, so the client never pulls all 8k+ at once).
+
+Registration flow is now **District → Block → Panchayat → Centre**. The student's
+home gram panchayat drives the Panchayat-level rank; the **exam centre**
+(`centers/*`) still gates the seat — blocks without a centre show "coming soon".
+Block/district come from the LGD selection; panchayat from the chosen GP (falls
+back to the centre's panchayat if a block has no GP list).
+
+> Codes: district codes are short/readable (pinned `DAR`/`MAD` to match seeded
+> centres, since `student_id` = `UD-<district_code>-<seq>`); block and panchayat
+> codes are the official LGD Localbody codes. Ranking groups by *name*.
+> This LGD data supersedes the earlier hand-supplied district→block sheet
+> (Purnia is now included natively).
 
 ### Serving model + custom domain (Mumbai-safe path)
 

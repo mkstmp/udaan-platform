@@ -54,7 +54,14 @@
       "Bash(python3 -c \"import json;d=json.load\\(open\\('backend/app/bihar_geo.json'\\)\\);print\\('geo json OK:',len\\(d['districts']\\),'districts'\\)\")",
       "Bash(curl -s __TRACKED_VAR__/api/geo)",
       "Bash(python3 -c \"import sys,json;d=json.load\\(sys.stdin\\);print\\('districts:',len\\(d['districts']\\),'| total blocks:',sum\\(len\\(x['blocks']\\) for x in d['districts']\\)\\);dm={x['district_name']:x for x in d['districts']};print\\('Darbhanga',dm['Darbhanga']['district_code'],'blocks:',len\\(dm['Darbhanga']['blocks']\\)\\);print\\('Purnia present:', 'Purnia' in dm\\)\")",
-      "Bash(git -c user.email=mukesh.sonepur@gmail.com -c user.name=Mukesh commit -q -m 'Add statewide Bihar geography to registration \\(38 districts, 532 blocks\\) *)"
+      "Bash(git -c user.email=mukesh.sonepur@gmail.com -c user.name=Mukesh commit -q -m 'Add statewide Bihar geography to registration \\(38 districts, 532 blocks\\) *)",
+      "WebSearch",
+      "Bash(gh api *)",
+      "Bash(python3 -c \"import sys,json;[print\\(f['name'],f['size']\\) for f in json.load\\(sys.stdin\\)]\")",
+      "Bash(python3 -c \"import json;p=json.load\\(open\\('backend/app/bihar_panchayats.json'\\)\\);print\\('Madhubani blocks incl Rajnagar:', 'Rajnagar' in p.get\\('Madhubani',{}\\)\\);print\\('sample Madhubani blocks:', sorted\\(p.get\\('Madhubani',{}\\).keys\\(\\)\\)[:8]\\)\")",
+      "Bash(grep -vE \"^\\\\s*$\")",
+      "Bash(python3 -c \"import sys,json;d=json.load\\(sys.stdin\\);print\\(len\\(d\\),'GPs:',[x['panchayat_name'] for x in d[:5]]\\)\")",
+      "Bash(git -c user.email=mukesh.sonepur@gmail.com -c user.name=Mukesh commit -q -m 'Replace geo with official LGD data incl. gram panchayats \\(8,051 GPs\\) *)"
     ]
   }
 }

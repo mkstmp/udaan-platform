@@ -39,7 +39,15 @@ _GEO_PATH = Path(__file__).resolve().parent / "bihar_geo.json"
 try:
     _GEO = _json.loads(_GEO_PATH.read_text(encoding="utf-8"))
 except Exception:
-    _GEO = {"state": "Bihar", "state_code": "BR", "districts": []}
+    _GEO = {"state": "Bihar", "state_code": "10", "districts": []}
+
+# Full district -> block -> [gram panchayats] map (LGD). Served lazily per
+# block so the client never downloads all 8k+ panchayats at once.
+_PAN_PATH = Path(__file__).resolve().parent / "bihar_panchayats.json"
+try:
+    _PAN = _json.loads(_PAN_PATH.read_text(encoding="utf-8"))
+except Exception:
+    _PAN = {}
 
 # CORS: lock to your real frontend origin(s) in production.
 app.add_middleware(
@@ -76,6 +84,15 @@ def list_exams():
 def geo():
     """Static Bihar district -> blocks reference for the registration dropdowns."""
     return _GEO
+
+
+@app.get("/api/geo/panchayats")
+def geo_panchayats(district: str, block: Optional[str] = None):
+    """Gram panchayats for a district (optionally one block). Lazy-loaded by the UI."""
+    d = _PAN.get(district, {})
+    if block is not None:
+        return d.get(block, [])
+    return d
 
 
 @app.get("/api/sample-papers")
