@@ -54,6 +54,24 @@ Endpoints: `POST/GET /api/admin/centers`, `PATCH /api/admin/centers/{id}`
 > This LGD data supersedes the earlier hand-supplied district→block sheet
 > (Purnia is now included natively).
 
+### Test / demo mode (populated leaderboard + results before a real exam)
+
+`scripts/seed_demo.py` creates a **self-contained DEMO exam** (`exam_id=udaan-demo`,
+~400 students with marks + precomputed ranks + leaderboard, tagged `demo`/`is_demo`).
+Because everything is keyed by `exam_id`, it never mixes with real data.
+
+Admin → **Overview → Test/demo mode** toggles `settings/app.demo_visible`:
+- **ON** → the DEMO exam appears in the public **Leaderboard / Results / Student
+  login** exam pickers, so you can see fully populated screens.
+- **OFF** (default) → hidden from the public (`/api/exams` filters `demo` exams;
+  `/api/config` reports `demo_visible`).
+
+Re-seed / wipe:
+```bash
+GOOGLE_CLOUD_PROJECT=udaan-platform-260701 python scripts/seed_demo.py         # seed
+GOOGLE_CLOUD_PROJECT=udaan-platform-260701 python scripts/seed_demo.py --wipe  # remove
+```
+
 ### Serving model + custom domain (Mumbai-safe path)
 
 **Firebase Hosting** serves the SPA (`frontend/index.html`) as a static file and

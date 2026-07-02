@@ -201,6 +201,7 @@ const KITE=(c1='#F4A300',c2='#1A2E5C')=>`
 const state={
   route:"home", ready:false,
   clientId:"", exams:[], exam:null,        // current exam
+  demoVisible:false, viewExamId:null,      // which exam's results we're viewing
   idToken:null, identity:null, role:"Parent",
   centers:null, geo:null, panchayats:{},
   reg:{step:0, data:{}, result:null},
@@ -208,7 +209,7 @@ const state={
   student:{data:null, admit:null, error:null},
   admit:{data:null},
   leaderboard:{cls:9, scope:"district", value:null, rows:null},
-  admin:{page:"overview", regs:null, results:null, marksOut:null, centers:null, centerForm:{}, filters:{cls:"all",district:"all"}},
+  admin:{page:"overview", regs:null, results:null, marksOut:null, centers:null, centerForm:{}, settings:null, filters:{cls:"all",district:"all"}},
 };
 
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
@@ -256,10 +257,32 @@ async function boot(){
   try{
     const [cfg,exams]=await Promise.all([api('/api/config'),api('/api/exams')]);
     state.clientId=cfg.google_client_id||'';
+    state.demoVisible=!!cfg.demo_visible;
     state.exams=exams||[];
     state.exam=state.exams.find(e=>e.status==='open')||state.exams.find(e=>e.status==='completed')||state.exams[0]||null;
   }catch(e){toast('Could not load exam data: '+e.message,true);}
   state.ready=true;render();
+}
+// Re-fetch exams+config after an admin toggles demo visibility.
+async function refreshExams(){
+  try{const [cfg,exams]=await Promise.all([api('/api/config'),api('/api/exams')]);
+    state.demoVisible=!!cfg.demo_visible;state.exams=exams||[];
+    state.leaderboard.rows=null;}catch(e){}
+}
+// The exam whose *results* we're viewing (leaderboard / result / student view):
+// prefer a published one; let the user switch when there are several.
+function getViewExam(){
+  const ex=state.exams||[];
+  if(state.viewExamId){const e=ex.find(x=>x.exam_id===state.viewExamId);if(e)return e;}
+  return ex.find(e=>e.results_published)||state.exam||ex[0]||null;
+}
+function examPicker(onChangeExtra){
+  const ex=state.exams||[];if(ex.length<2)return '';
+  const cur=getViewExam();
+  return `<div class="field" style="max-width:380px"><label>Exam</label>
+    <select class="input" onchange="state.viewExamId=this.value;${onChangeExtra||''}render()">
+      ${ex.map(e=>`<option value="${esc(e.exam_id)}" ${cur&&cur.exam_id===e.exam_id?'selected':''}>${esc(e.name)}${e.results_published?' — results out':''}</option>`).join('')}
+    </select></div>`;
 }
 
 /* ---------- layout ---------- */
@@ -624,6 +647,7 @@ function studentLoginPage(){
     <div class="card pad"><span class="eyebrow">Student login</span>
       <h2 style="font-size:26px;color:var(--indigo);margin:8px 0 6px">Enter your username</h2>
       <p class="muted" style="font-size:14px;margin:0 0 18px">The username printed on your admit card. No password — you can only view your own score, ranks, and admit card. Nothing private is shown.</p>
+      ${examPicker('')}
       <div class="field"><label>Username</label><input class="input" id="uname" placeholder="e.g. Mukesh_Singh_87" onkeydown="if(event.key==='Enter')studentSignin()"></div>
       ${state.student.error?`<p class="hint" style="color:var(--danger)">${esc(state.student.error)}</p>`:''}
       <button class="btn primary block lg" onclick="studentSignin()">View my dashboard →</button>
@@ -631,9 +655,9 @@ function studentLoginPage(){
 }
 async function studentSignin(){
   const u=val('uname');if(!u){toast('Type your username',true);return;}
-  if(!state.exam){toast('No exam available',true);return;}
+  const ex=getViewExam();if(!ex){toast('No exam available',true);return;}
   state.student.error=null;toast('Looking up…');
-  const q='?exam_id='+encodeURIComponent(state.exam.exam_id);
+  const q='?exam_id='+encodeURIComponent(ex.exam_id);
   try{
     const admit=await api('/api/student/'+encodeURIComponent(u)+'/admit-card'+q);
     state.student.admit=admit;
@@ -681,10 +705,11 @@ function resultInner(s){
 function topLabel(r){if(r===1)return '🏆 Rank 1 — topper';if(r&&r<=3)return '🥈 Podium finish';if(r&&r<=10)return 'Top 10';return 'Keep going';}
 
 /* ---------- admit card ---------- */
-async function viewAdmit(username){
-  if(!state.exam){toast('No exam',true);return;}
+async function viewAdmit(username,examId){
+  const id=examId||(state.exam&&state.exam.exam_id)||(getViewExam()&&getViewExam().exam_id);
+  if(!id){toast('No exam',true);return;}
   toast('Loading admit card…');
-  try{state.admit.data=await api('/api/student/'+encodeURIComponent(username)+'/admit-card?exam_id='+encodeURIComponent(state.exam.exam_id));go('admit');}
+  try{state.admit.data=await api('/api/student/'+encodeURIComponent(username)+'/admit-card?exam_id='+encodeURIComponent(id));go('admit');}
   catch(e){toast(e.message,true);}
 }
 function showAdmit(){if(state.student.admit){state.admit.data=state.student.admit;go('admit');}}
@@ -730,23 +755,25 @@ function result(){
     <div class="card pad"><span class="eyebrow">Results</span>
       <h2 style="font-size:26px;color:var(--indigo);margin:8px 0 6px">Check your result</h2>
       <p class="muted" style="font-size:14px;margin:0 0 18px">Enter the username from your admit card. You'll see your score and rank at every level — nothing private.</p>
+      ${examPicker('state.lookup.result=null;')}
       <div class="field"><label>Username</label><input class="input" id="ruser" placeholder="Mukesh_Singh_87" onkeydown="if(event.key==='Enter')lookupResult()"></div>
       ${state.lookup.error?`<p class="hint" style="color:var(--danger)">${esc(state.lookup.error)}</p>`:''}
       <button class="btn primary block lg" onclick="lookupResult()">See my result →</button>
     </div></div></section>`);
+  const ex=getViewExam();
   return shell(`<section class="band"><div class="wrap" style="max-width:720px">
     <div class="backlink" onclick="state.lookup.result=null;render()">← Check another</div>
     ${resultInner(r)}
     <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:16px">
       <a class="btn ghost" onclick="go('leaderboard')">See leaderboard</a>
-      <a class="btn indigo" onclick="viewAdmit('${esc(r.username)}')">${icon('dl')} Admit card</a>
+      <a class="btn indigo" onclick="viewAdmit('${esc(r.username)}','${esc(ex?ex.exam_id:'')}')">${icon('dl')} Admit card</a>
     </div></div></section>`);
 }
 async function lookupResult(){
   const u=val('ruser');if(!u){toast('Type a username',true);return;}
-  if(!state.exam){toast('No exam',true);return;}
+  const ex=getViewExam();if(!ex){toast('No exam',true);return;}
   state.lookup.error=null;toast('Looking up…');
-  try{state.lookup.result=await api('/api/student/'+encodeURIComponent(u)+'/result?exam_id='+encodeURIComponent(state.exam.exam_id));render();}
+  try{state.lookup.result=await api('/api/student/'+encodeURIComponent(u)+'/result?exam_id='+encodeURIComponent(ex.exam_id));render();}
   catch(e){state.lookup.error=e.message;render();}
 }
 
@@ -754,21 +781,22 @@ async function lookupResult(){
    PUBLIC LEADERBOARD
    ============================================================ */
 async function loadLeaderboard(){
-  const lb=state.leaderboard;if(!state.exam){lb.rows=[];render();return;}
-  let q='?exam_id='+encodeURIComponent(state.exam.exam_id)+'&cls='+lb.cls+'&scope='+lb.scope;
+  const lb=state.leaderboard;const ex=getViewExam();if(!ex){lb.rows=[];render();return;}
+  let q='?exam_id='+encodeURIComponent(ex.exam_id)+'&cls='+lb.cls+'&scope='+lb.scope;
   if(lb.scope!=='state'&&lb.value)q+='&scope_value='+encodeURIComponent(lb.value);
   try{lb.rows=await api('/api/leaderboard'+q);}catch(e){lb.rows=[];toast(e.message,true);}render();
 }
 function leaderboard(){
-  const lb=state.leaderboard;
+  const lb=state.leaderboard;const ex=getViewExam();
   if(lb.rows===null){loadLeaderboard();return shell(`<section class="band"><div class="wrap"><div class="backlink" onclick="go('home')">← Home</div><p><span class="spin"></span> Loading leaderboard…</p></div></section>`);}
-  const clsList=(state.exam&&state.exam.eligible_classes&&state.exam.eligible_classes.length)?state.exam.eligible_classes:[7,8,9,10];
+  const clsList=(ex&&ex.eligible_classes&&ex.eligible_classes.length)?ex.eligible_classes:[7,8,9,10];
   const rows=lb.rows||[];
   return shell(`
   <section class="band"><div class="wrap">
     <div class="backlink" onclick="go('home')">← Home</div>
     <div class="sec-head"><span class="eyebrow">Merit lists</span><h2>Leaderboard</h2>
       <p>Toppers by level and class — the same numbers students see on their result.</p></div>
+    ${examPicker('state.leaderboard.rows=null;')}
     <div class="toolbar">
       <select onchange="state.leaderboard.cls=+this.value;state.leaderboard.rows=null;render()">${clsList.map(c=>`<option value="${c}" ${c===lb.cls?'selected':''}>Class ${c}</option>`).join('')}</select>
       <select onchange="state.leaderboard.scope=this.value;state.leaderboard.value=null;state.leaderboard.rows=null;render()">
@@ -818,6 +846,24 @@ function admin(){
   </div>`;
 }
 async function loadRegs(){try{state.admin.regs=await api('/api/admin/registrations?exam_id='+encodeURIComponent(state.exam.exam_id),{auth:true});}catch(e){state.admin.regs=[];toast(e.message,true);}render();}
+async function loadSettings(){try{state.admin.settings=await api('/api/admin/settings',{auth:true});}catch(e){state.admin.settings={demo_visible:false};}render();}
+async function toggleDemo(){
+  const on=!(state.admin.settings&&state.admin.settings.demo_visible);
+  toast(on?'Enabling test mode…':'Disabling test mode…');
+  try{state.admin.settings=await api('/api/admin/settings',{method:'PATCH',body:{demo_visible:on},auth:true});
+    await refreshExams();  // demo exam appears/disappears in the public pickers
+    toast('Test mode '+(on?'ON — demo data is now visible':'OFF — demo data hidden'));render();}
+  catch(e){toast(e.message,true);}
+}
+function demoToggleCard(){
+  if(state.admin.settings===null){loadSettings();return '';}
+  const on=!!state.admin.settings.demo_visible;
+  return `<div class="card pad" style="margin-bottom:22px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;border-left:4px solid ${on?'var(--sprout)':'var(--line)'}">
+    <div><h4 style="font-size:16px;margin-bottom:2px">Test / demo mode <span class="tag ${on?'open':'draft'}" style="margin-left:6px">${on?'ON':'OFF'}</span></h4>
+      <p class="muted" style="font-size:13px;margin:0">When ON, a sample "DEMO" exam with ~400 students becomes visible in the public Leaderboard, Results, and Student login pickers — so you can see fully populated screens. Turn OFF to hide it from real users.</p></div>
+    <button class="btn ${on?'ghost':'primary'}" onclick="toggleDemo()">${on?'Turn OFF':'Turn ON'}</button>
+  </div>`;
+}
 function adminOverview(){
   if(!state.exam)return `<p class="muted">No exam configured.</p>`;
   if(state.admin.regs===null){loadRegs();return `<p><span class="spin"></span> Loading…</p>`;}
@@ -828,7 +874,8 @@ function adminOverview(){
   const uploaded=regs.filter(r=>r.marks_obtained!=null).length;
   const maxC=Math.max(1,...byClass.map(x=>x[1]));
   return `<h2 style="font-size:26px;color:var(--indigo);margin-bottom:4px">Overview</h2>
-  <p class="muted" style="margin:0 0 22px">${esc(state.exam.name)} · ${esc(fmtDate(state.exam.exam_date))} · <span class="tag ${state.exam.status==='open'?'open':'closed'}">${esc(state.exam.status)}</span></p>
+  <p class="muted" style="margin:0 0 18px">${esc(state.exam.name)} · ${esc(fmtDate(state.exam.exam_date))} · <span class="tag ${state.exam.status==='open'?'open':'closed'}">${esc(state.exam.status)}</span></p>
+  ${demoToggleCard()}
   <div class="stat-grid">
     <div class="stat"><div class="l">Registrations</div><div class="v">${total}</div></div>
     <div class="stat"><div class="l">Districts</div><div class="v">${dists.length}</div></div>

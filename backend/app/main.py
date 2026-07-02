@@ -70,14 +70,16 @@ def healthz():
 
 @app.get("/api/config")
 def public_config():
-    """Client bootstrap: the OAuth client id the frontend needs to init Google sign-in."""
-    return {"google_client_id": os.environ.get("GOOGLE_CLIENT_ID", "")}
+    """Client bootstrap: OAuth client id + whether the demo exam is publicly visible."""
+    return {"google_client_id": os.environ.get("GOOGLE_CLIENT_ID", ""),
+            "demo_visible": db.get_settings().get("demo_visible", False)}
 
 
 @app.get("/api/exams")
 def list_exams():
-    """Public list of exams (open/closed/completed) for the home page + pickers."""
-    return db.list_open_exams()
+    """Public exams. Demo exams (demo=true) are hidden unless test mode is on."""
+    demo_visible = db.get_settings().get("demo_visible", False)
+    return [e for e in db.list_open_exams() if demo_visible or not e.get("demo")]
 
 
 @app.get("/api/geo")
@@ -205,6 +207,24 @@ def list_my_students(adult=Depends(auth.require_adult)):
 # ----------------------------------------------------------------------------
 # ADMIN — Google OAuth + email allowlist
 # ----------------------------------------------------------------------------
+
+class SettingsPatch(BaseModel):
+    demo_visible: Optional[bool] = None
+
+
+@app.get("/api/admin/settings")
+def get_admin_settings(admin=Depends(auth.require_admin)):
+    return db.get_settings()
+
+
+@app.patch("/api/admin/settings")
+def patch_admin_settings(payload: SettingsPatch, admin=Depends(auth.require_admin)):
+    """Toggle test/demo mode (demo_visible) so the demo exam shows/hides publicly."""
+    patch = {k: v for k, v in payload.model_dump().items() if v is not None}
+    if not patch:
+        raise HTTPException(400, "Nothing to update.")
+    return db.set_settings(patch)
+
 
 class CenterIn(BaseModel):
     exam_id: str

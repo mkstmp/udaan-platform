@@ -46,6 +46,18 @@ def is_admin(email):
     return _db.collection("admins").document(email).get().exists
 
 
+def get_settings():
+    """App-wide settings (e.g. demo_visible). Defaults when the doc is absent."""
+    d = _db.collection("settings").document("app").get()
+    s = d.to_dict() if d.exists else {}
+    return {"demo_visible": bool(s.get("demo_visible", False))}
+
+
+def set_settings(patch):
+    _db.collection("settings").document("app").set(patch, merge=True)
+    return get_settings()
+
+
 def list_open_exams():
     """Public: exams the frontend may show (open/closed/completed)."""
     out = []

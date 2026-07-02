@@ -66,7 +66,14 @@
       "Bash(curl -s -o /dev/null -w 'POST /api/admin/centers -> %{http_code}\\\\n' -X POST __TRACKED_VAR__/api/admin/centers -H 'Content-Type: application/json' -d '{}')",
       "Bash(curl -s -o /dev/null -w 'GET  /api/admin/centers -> %{http_code}\\\\n' __TRACKED_VAR__/api/admin/centers?exam_id=udaan-2026-08-math)",
       "Bash(curl -s \"https://udaan-platform-260701.web.app/\")",
-      "Bash(git -c user.email=mukesh.sonepur@gmail.com -c user.name=Mukesh commit -q -m 'Admin: add Exam Centres management \\(create/list/activate\\) in console *)"
+      "Bash(git -c user.email=mukesh.sonepur@gmail.com -c user.name=Mukesh commit -q -m 'Admin: add Exam Centres management \\(create/list/activate\\) in console *)",
+      "Bash(python3 scripts/seed_demo.py)",
+      "Bash(python3 -m py_compile backend/app/main.py backend/app/db.py scripts/seed_demo.py)",
+      "Bash(curl -s https://udaan-api-md45haetfq-el.a.run.app/api/centers?exam_id=udaan-2026-08-math)",
+      "Bash(python3 -c \"import sys,json;d=json.load\\(sys.stdin\\);[print\\(' ',c['district_name'],'/',c['block_name'],'→',c['name'],'|',c['seats_left'],'seats'\\) for c in d if c['district_name']=='Saran']\")",
+      "Bash(curl -s __TRACKED_VAR__/api/exams)",
+      "Bash(python3 -c \"import sys,json;d=json.load\\(sys.stdin\\);print\\(len\\(d\\),'rows; top:',d[0]['name'],d[0]['marks_obtained'] if d else ''\\)\")",
+      "Bash(git -c user.email=mukesh.sonepur@gmail.com -c user.name=Mukesh commit -q -m 'Add demo/test mode: seedable DEMO exam + admin visibility toggle + exam pickers *)"
     ]
   }
 }
