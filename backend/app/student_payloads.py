@@ -49,8 +49,8 @@ def student_result_view(student: dict, reg: dict) -> dict:
 def admit_card_view(student: dict, reg: dict, exam: dict, center: dict) -> dict:
     card = _pick(student, ADMIT_ALLOWLIST)
     card.update({
-        "roll_number": reg.get("roll_number"),
-        "center_name": center.get("name") if center else None,
+        "roll_number": reg.get("roll_number") or reg.get("student_id"),
+        "center_name": (center.get("name") if center else None) or reg.get("center_name"),
         "exam_name": exam.get("name"),
         "exam_date": exam.get("exam_date"),
         "exam_time": f'{exam.get("exam_start_time","")} – {exam.get("exam_end_time","")}',

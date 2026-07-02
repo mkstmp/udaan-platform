@@ -135,7 +135,7 @@ def get_student_admit_card(username: str, exam_id: str):
     if not reg:
         raise HTTPException(404, "Not registered for this exam.")
     exam = db.get_exam(exam_id)
-    center = db.get_center(reg["center_id"])
+    center = db.get_center(reg["center_id"]) if reg.get("center_id") else None
     return admit_card_view(student, reg, exam, center)  # <-- allowlist enforced
 
 

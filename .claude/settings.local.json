@@ -78,7 +78,12 @@
       "Bash(git -c user.email=mukesh.sonepur@gmail.com -c user.name=Mukesh commit -q -m 'Admin: clickable registration rows open full student detail *)",
       "Bash(curl -s https://udaan-api-md45haetfq-el.a.run.app/api/config)",
       "Bash(python3 -c \"import sys,json;print\\(len\\(json.load\\(sys.stdin\\)\\),'rows'\\)\")",
-      "Bash(git -c user.email=mukesh.sonepur@gmail.com -c user.name=Mukesh commit -q -m 'Admin: exam selector so Overview/Registrations/Results can view the DEMO exam *)"
+      "Bash(git -c user.email=mukesh.sonepur@gmail.com -c user.name=Mukesh commit -q -m 'Admin: exam selector so Overview/Registrations/Results can view the DEMO exam *)",
+      "Bash(python3 -m py_compile backend/app/main.py backend/app/student_payloads.py)",
+      "Bash(curl -s -o /dev/null -w 'HTTP %{http_code}\\\\n' https://udaan-api-md45haetfq-el.a.run.app/api/student/Khushi_Singh_26/admit-card?exam_id=udaan-demo)",
+      "Bash(curl -s https://udaan-api-md45haetfq-el.a.run.app/api/student/Khushi_Singh_26/admit-card?exam_id=udaan-demo)",
+      "Bash(python3 -c \"import sys,json;d=json.load\\(sys.stdin\\);print\\('  marks:',d.get\\('marks_obtained'\\),'| panchayat rank:',d.get\\('ranks',{}\\).get\\('panchayat'\\)\\)\")",
+      "Bash(git -c user.email=mukesh.sonepur@gmail.com -c user.name=Mukesh commit -q -m 'Fix 500 on admit card when a registration has no center_id *)"
     ]
   }
 }
