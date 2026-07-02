@@ -34,30 +34,25 @@ real domain: **Firebase Console → Hosting → Add custom domain**, then add th
 records it shows (managed TLS issues automatically). Redeploy hosting after code
 changes with `firebase deploy --only hosting`.
 
-### ⚠️ One manual step to enable Google sign-in (register / adult / admin)
+### ✅ Google sign-in is configured
 
-`GOOGLE_CLIENT_ID` is currently empty, so "Sign in with Google" is disabled.
-Google does not expose an API to create web OAuth clients, so do this once in
-the Console:
+`GOOGLE_CLIENT_ID` is set on Cloud Run, so "Sign in with Google" (register /
+adult / admin) is live. The admin console is gated to the email(s) in Firestore
+`admins/*`.
 
-1. **APIs & Services → OAuth consent screen** → External → fill app name +
-   support email → add yourself under *Test users* (or Publish).
-2. **APIs & Services → Credentials → Create credentials → OAuth client ID →
-   Web application.**
-   - **Authorized JavaScript origins** (add all you'll use):
-     `https://udaan-platform-260701.web.app`,
-     `https://udaan-api-md45haetfq-el.a.run.app`,
-     and your custom domain once added.
-   - (No redirect URI needed — we verify the ID token, not a code exchange.)
-3. Copy the **Client ID** and plug it in (no rebuild, ~30s redeploy):
+For sign-in to succeed in the browser, the OAuth client
+(`623704019791-…apps.googleusercontent.com`) must have:
+- **Authorized JavaScript origins** including `https://udaan-platform-260701.web.app`
+  (the primary URL) and any custom domain.
+- An **OAuth consent screen** that's either **Published** (so any parent/teacher
+  can sign in) or in Testing with the users added under *Test users*.
+
+To rotate the client id later (no rebuild, ~30s redeploy):
 
 ```bash
 gcloud run services update udaan-api --region asia-south1 \
-  --update-env-vars GOOGLE_CLIENT_ID=YOUR_CLIENT_ID.apps.googleusercontent.com
+  --update-env-vars GOOGLE_CLIENT_ID=NEW_CLIENT_ID.apps.googleusercontent.com
 ```
-
-That's it — sign-in then works everywhere. The admin console is gated to the
-email(s) in Firestore `admins/*` (seeded via `ADMIN_EMAILS`).
 
 > **Health checks:** point uptime monitors at `/api/config` (returns 200).
 > Google's edge returns a 404 for extensionless paths like `/healthz`, but every

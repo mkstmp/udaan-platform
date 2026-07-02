@@ -39,7 +39,12 @@
       "Bash(firebase hosting:sites:create udaan-platform-260701 --project udaan-platform-260701)",
       "Bash(firebase projects:addfirebase udaan-platform-260701)",
       "Bash(curl -s https://udaan-platform-260701.web.app/)",
-      "Bash(git -c user.email=mukesh.sonepur@gmail.com -c user.name=Mukesh commit -q -m 'Add Firebase Hosting \\(custom-domain path for Mumbai\\) + docs; 3 admins *)"
+      "Bash(git -c user.email=mukesh.sonepur@gmail.com -c user.name=Mukesh commit -q -m 'Add Firebase Hosting \\(custom-domain path for Mumbai\\) + docs; 3 admins *)",
+      "Bash(curl -s \"https://udaan-api-md45haetfq-el.a.run.app/api/config\")",
+      "Bash(curl -s \"https://udaan-platform-260701.web.app/api/config\")",
+      "Bash(curl -s -o /dev/null -w '%{http_code}\\\\n' -H 'Authorization: Bearer not-a-real-token' https://udaan-platform-260701.web.app/api/adult/students)",
+      "Bash(curl -s -H 'Authorization: Bearer not-a-real-token' https://udaan-platform-260701.web.app/api/adult/students)",
+      "Bash(git -c user.email=mukesh.sonepur@gmail.com -c user.name=Mukesh commit -q -m 'Google sign-in configured \\(GOOGLE_CLIENT_ID set on Cloud Run\\) *)"
     ]
   }
 }
