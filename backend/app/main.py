@@ -206,6 +206,55 @@ def list_my_students(adult=Depends(auth.require_adult)):
 # ADMIN — Google OAuth + email allowlist
 # ----------------------------------------------------------------------------
 
+class CenterIn(BaseModel):
+    exam_id: str
+    name: str
+    address: Optional[str] = None
+    district_name: str; district_code: str
+    block_name: str;    block_code: str
+    panchayat_name: Optional[str] = None
+    panchayat_code: Optional[str] = None
+    capacity: int
+    coordinator_name: Optional[str] = None
+    coordinator_mobile: Optional[str] = None
+    active: bool = True
+
+
+class CenterPatch(BaseModel):
+    name: Optional[str] = None
+    address: Optional[str] = None
+    capacity: Optional[int] = None
+    coordinator_name: Optional[str] = None
+    coordinator_mobile: Optional[str] = None
+    active: Optional[bool] = None
+
+
+@app.post("/api/admin/centers")
+def create_center(payload: CenterIn, admin=Depends(auth.require_admin)):
+    """Create an exam centre. Registration opens for its district+block immediately."""
+    if payload.capacity <= 0:
+        raise HTTPException(400, "Capacity must be a positive number.")
+    return db.create_center(payload.model_dump())
+
+
+@app.get("/api/admin/centers")
+def list_admin_centers(exam_id: str, admin=Depends(auth.require_admin)):
+    """Full centre list for an exam (incl. coordinator + used capacity)."""
+    return db.list_centers_admin(exam_id)
+
+
+@app.patch("/api/admin/centers/{center_id}")
+def patch_center(center_id: str, payload: CenterPatch, admin=Depends(auth.require_admin)):
+    """Update capacity / active / coordinator / name / address."""
+    patch = {k: v for k, v in payload.model_dump().items() if v is not None}
+    if not patch:
+        raise HTTPException(400, "Nothing to update.")
+    res = db.update_center(center_id, patch)
+    if not res:
+        raise HTTPException(404, "Centre not found.")
+    return res
+
+
 class MarksRow(BaseModel):
     student_id: str
     marks_obtained: float

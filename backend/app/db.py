@@ -157,6 +157,32 @@ def create_student_and_registration(student, exam_id, center_id):
     return _txn(_db.transaction())
 
 
+def create_center(data):
+    """Admin: create an exam centre (auto id == center_id; used_capacity starts 0)."""
+    ref = _db.collection("centers").document()
+    doc = {**data, "center_id": ref.id, "used_capacity": 0,
+           "created_at": firestore.SERVER_TIMESTAMP, "updated_at": firestore.SERVER_TIMESTAMP}
+    ref.set(doc)
+    return {"center_id": ref.id}
+
+
+def list_centers_admin(exam_id):
+    """Admin: all centres for an exam (full fields incl. coordinator + usage)."""
+    q = _db.collection("centers").where("exam_id", "==", exam_id)
+    rows = [d.to_dict() for d in q.stream()]
+    rows.sort(key=lambda c: (c.get("district_name", ""), c.get("block_name", ""), c.get("name", "")))
+    return rows
+
+
+def update_center(center_id, patch):
+    """Admin: update allowed centre fields (capacity, active, coordinator, name, address)."""
+    ref = _db.collection("centers").document(center_id)
+    if not ref.get().exists:
+        return None
+    ref.update({**patch, "updated_at": firestore.SERVER_TIMESTAMP})
+    return {"center_id": center_id, "updated": True}
+
+
 def apply_marks(exam_id, rows):
     matched, unmatched = 0, []
     batch = _db.batch()

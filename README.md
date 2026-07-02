@@ -42,6 +42,12 @@ home gram panchayat drives the Panchayat-level rank; the **exam centre**
 Block/district come from the LGD selection; panchayat from the chosen GP (falls
 back to the centre's panchayat if a block has no GP list).
 
+**Admins add centres in the console** (Admin → *Exam centres*): pick district →
+block → panchayat from the same LGD dropdowns, set capacity + coordinator, save.
+Registration opens for that district+block the moment an active centre exists.
+Endpoints: `POST/GET /api/admin/centers`, `PATCH /api/admin/centers/{id}`
+(activate/deactivate, capacity). The `seed_firestore.py` script is now optional.
+
 > Codes: district codes are short/readable (pinned `DAR`/`MAD` to match seeded
 > centres, since `student_id` = `UD-<district_code>-<seq>`); block and panchayat
 > codes are the official LGD Localbody codes. Ranking groups by *name*.

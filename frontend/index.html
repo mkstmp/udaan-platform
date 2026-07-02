@@ -208,7 +208,7 @@ const state={
   student:{data:null, admit:null, error:null},
   admit:{data:null},
   leaderboard:{cls:9, scope:"district", value:null, rows:null},
-  admin:{page:"overview", regs:null, results:null, marksOut:null, filters:{cls:"all",district:"all"}},
+  admin:{page:"overview", regs:null, results:null, marksOut:null, centers:null, centerForm:{}, filters:{cls:"all",district:"all"}},
 };
 
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
@@ -801,9 +801,10 @@ function admin(){
         <div class="gslot"></div></div></div></section>`;
   }
   const p=state.admin.page;
-  const nav=[["overview","Overview","chart"],["registrations","Registrations","user"],["marks","Upload marks","dl"],["results","Results & slices","chart"]];
+  const nav=[["overview","Overview","chart"],["registrations","Registrations","user"],["centers","Exam centres","book"],["marks","Upload marks","dl"],["results","Results & slices","chart"]];
   let main='';
   if(p==='overview')main=adminOverview();else if(p==='registrations')main=adminRegs();
+  else if(p==='centers')main=adminCenters();
   else if(p==='marks')main=adminMarks();else if(p==='results')main=adminResults();
   return `
   <header class="top"><div class="wrap">
@@ -953,6 +954,93 @@ function adminResults(){
         <td style="font-weight:600">${esc(s.name)}</td><td class="muted" style="font-size:13px">C${esc(s.class)} · ${esc(s.panchayat_name)}</td>
         <td class="num" style="font-weight:700">${esc(s.marks_obtained)}</td></tr>`).join('')}</tbody></table></div>
   </div>`:'<div class="card pad center"><p class="muted">No marks uploaded for this slice yet. Upload marks, then publish.</p></div>'}`;
+}
+
+/* ---------- admin: exam centres ---------- */
+async function loadAdminCenters(){
+  try{state.admin.centers=await api('/api/admin/centers?exam_id='+encodeURIComponent(state.exam.exam_id),{auth:true});}
+  catch(e){state.admin.centers=[];toast(e.message,true);}render();
+}
+// Snapshot centre-form text inputs before a re-render (same pattern as registration).
+function cfSnap(){const f=state.admin.centerForm;
+  [['cf_name','name'],['cf_addr','address'],['cf_cap','capacity'],['cf_coord','coordinator_name'],['cf_mobile','coordinator_mobile']]
+    .forEach(([id,k])=>{const el=document.getElementById(id);if(el)f[k]=el.value.trim();});}
+function cfSet(k,v){cfSnap();const f=state.admin.centerForm;f[k]=v;
+  if(k==='district'){f.block='';f.panchayat_code='';f.panchayat_name='';}
+  if(k==='block'){f.panchayat_code='';f.panchayat_name='';}
+  render();}
+function cfSetPan(code){cfSnap();const f=state.admin.centerForm;const list=state.panchayats[panKey(f.district,f.block)]||[];
+  const p=list.find(x=>x.panchayat_code===code);f.panchayat_code=code;f.panchayat_name=p?p.panchayat_name:'';render();}
+function adminCenters(){
+  if(!state.exam)return `<p class="muted">No exam configured.</p>`;
+  if(state.geo===null){loadLocationData();return `<p><span class="spin"></span> Loading…</p>`;}
+  if(state.admin.centers===null){loadAdminCenters();return `<p><span class="spin"></span> Loading centres…</p>`;}
+  const f=state.admin.centerForm,districts=(state.geo.districts)||[];
+  const distObj=districts.find(x=>x.district_name===f.district);
+  const distOpts=`<option value="">Select district</option>`+districts.map(x=>`<option ${f.district===x.district_name?'selected':''}>${esc(x.district_name)}</option>`).join('');
+  let blockOpts=`<option value="">Select block</option>`;
+  if(distObj)blockOpts+=distObj.blocks.map(b=>`<option ${f.block===b.block_name?'selected':''}>${esc(b.block_name)}</option>`).join('');
+  let panField='';
+  if(f.district&&f.block){
+    const k=panKey(f.district,f.block),list=state.panchayats[k];
+    if(list===undefined){loadPanchayats(f.district,f.block);}
+    if(list===undefined||list===null){panField=`<div class="field"><label>Panchayat (optional)</label><select class="input" disabled><option>Loading…</option></select></div>`;}
+    else if(list.length){panField=`<div class="field"><label>Panchayat (optional)</label><select class="input" onchange="cfSetPan(this.value)"><option value="">— none / block HQ —</option>${list.map(p=>`<option value="${esc(p.panchayat_code)}" ${f.panchayat_code===p.panchayat_code?'selected':''}>${esc(p.panchayat_name)}</option>`).join('')}</select></div>`;}
+  }
+  const cs=state.admin.centers;
+  const rows=cs.length?cs.map(c=>`<tr>
+    <td style="font-weight:600">${esc(c.name)}${c.address?`<div class="muted" style="font-size:12px;font-weight:400">${esc(c.address)}</div>`:''}</td>
+    <td class="muted">${esc(c.panchayat_name?c.panchayat_name+', ':'')}${esc(c.block_name)}, ${esc(c.district_name)}</td>
+    <td class="num">${esc(c.used_capacity||0)} / ${esc(c.capacity)}</td>
+    <td class="muted" style="font-size:13px">${esc(c.coordinator_name||'—')}${c.coordinator_mobile?'<br>'+esc(c.coordinator_mobile):''}</td>
+    <td><span class="tag ${c.active?'open':'closed'}">${c.active?'active':'inactive'}</span></td>
+    <td><a onclick="toggleCenter('${esc(c.center_id)}',${c.active?'false':'true'})" style="color:var(--indigo);cursor:pointer;font-weight:600;font-size:13px">${c.active?'Deactivate':'Activate'}</a></td>
+  </tr>`).join(''):'<tr><td colspan="6" class="muted center" style="padding:24px">No centres yet. Add your first one.</td></tr>';
+  return `<h2 style="font-size:26px;color:var(--indigo);margin-bottom:4px">Exam centres</h2>
+  <p class="muted" style="margin:0 0 20px">Add the offline venues. Registration opens for a district+block as soon as it has an active centre.</p>
+  <div class="grid2" style="align-items:start">
+    <div class="card pad">
+      <h4 style="font-size:16px;margin-bottom:14px">Add a centre</h4>
+      <div class="field"><label>Centre name <span class="req">*</span></label><input class="input" id="cf_name" value="${esc(f.name||'')}" placeholder="e.g. Rasalpur Panchayat Bhavan"></div>
+      <div class="field"><label>Address</label><input class="input" id="cf_addr" value="${esc(f.address||'')}" placeholder="Landmark / village"></div>
+      <div class="field"><label>District <span class="req">*</span></label><select class="input" onchange="cfSet('district',this.value)">${distOpts}</select></div>
+      <div class="field"><label>Block <span class="req">*</span></label><select class="input" onchange="cfSet('block',this.value)" ${!f.district?'disabled':''}>${blockOpts}</select></div>
+      ${panField}
+      <div class="row2">
+        <div class="field"><label>Capacity <span class="req">*</span></label><input class="input" id="cf_cap" type="number" min="1" value="${esc(f.capacity||'')}" placeholder="120"></div>
+        <div class="field"><label>Coordinator mobile</label><input class="input" id="cf_mobile" value="${esc(f.coordinator_mobile||'')}"></div>
+      </div>
+      <div class="field"><label>Coordinator name</label><input class="input" id="cf_coord" value="${esc(f.coordinator_name||'')}"></div>
+      <button class="btn primary block" onclick="createCenter()">${icon('check')} Add centre</button>
+    </div>
+    <div class="card" style="overflow:auto">
+      <table><thead><tr><th>Centre</th><th>Location</th><th class="num">Used/Cap</th><th>Coordinator</th><th>Status</th><th></th></tr></thead>
+      <tbody>${rows}</tbody></table>
+    </div>
+  </div>`;
+}
+async function createCenter(){
+  cfSnap();const f=state.admin.centerForm;
+  const distObj=(state.geo.districts||[]).find(x=>x.district_name===f.district);
+  const blkObj=distObj&&distObj.blocks.find(b=>b.block_name===f.block);
+  const cap=parseInt(f.capacity,10);
+  if(!f.name||!f.district||!f.block){toast('Name, district and block are required',true);return;}
+  if(!cap||cap<1){toast('Enter a valid capacity',true);return;}
+  const payload={exam_id:state.exam.exam_id,name:f.name,address:f.address||null,
+    district_name:f.district,district_code:distObj?distObj.district_code:'',
+    block_name:f.block,block_code:blkObj?blkObj.block_code:'',
+    panchayat_name:f.panchayat_name||null,panchayat_code:f.panchayat_code||null,
+    capacity:cap,coordinator_name:f.coordinator_name||null,coordinator_mobile:f.coordinator_mobile||null,active:true};
+  toast('Adding centre…');
+  try{await api('/api/admin/centers',{method:'POST',body:payload,auth:true});
+    state.admin.centerForm={};state.admin.centers=null;state.centers=null; // refresh admin list + public list
+    toast('Centre added ✓');render();}
+  catch(e){toast(e.message,true);}
+}
+async function toggleCenter(id,active){
+  try{await api('/api/admin/centers/'+encodeURIComponent(id),{method:'PATCH',body:{active:active},auth:true});
+    state.admin.centers=null;state.centers=null;toast('Updated ✓');render();}
+  catch(e){toast(e.message,true);}
 }
 
 /* ============================================================
