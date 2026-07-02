@@ -73,7 +73,9 @@
       "Bash(python3 -c \"import sys,json;d=json.load\\(sys.stdin\\);[print\\(' ',c['district_name'],'/',c['block_name'],'→',c['name'],'|',c['seats_left'],'seats'\\) for c in d if c['district_name']=='Saran']\")",
       "Bash(curl -s __TRACKED_VAR__/api/exams)",
       "Bash(python3 -c \"import sys,json;d=json.load\\(sys.stdin\\);print\\(len\\(d\\),'rows; top:',d[0]['name'],d[0]['marks_obtained'] if d else ''\\)\")",
-      "Bash(git -c user.email=mukesh.sonepur@gmail.com -c user.name=Mukesh commit -q -m 'Add demo/test mode: seedable DEMO exam + admin visibility toggle + exam pickers *)"
+      "Bash(git -c user.email=mukesh.sonepur@gmail.com -c user.name=Mukesh commit -q -m 'Add demo/test mode: seedable DEMO exam + admin visibility toggle + exam pickers *)",
+      "Bash(curl -s -o /dev/null -w '%{http_code}\\\\n' __TRACKED_VAR__/api/admin/students/UD-SAR-0001)",
+      "Bash(git -c user.email=mukesh.sonepur@gmail.com -c user.name=Mukesh commit -q -m 'Admin: clickable registration rows open full student detail *)"
     ]
   }
 }

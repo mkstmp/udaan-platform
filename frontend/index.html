@@ -163,6 +163,17 @@
   .divider{height:1px;background:var(--line);margin:22px 0}
   .backlink{display:inline-flex;gap:6px;align-items:center;font-size:14px;color:var(--muted);cursor:pointer;font-weight:500;margin-bottom:18px}
   .backlink:hover{color:var(--indigo)}
+  .modal-ov{position:fixed;inset:0;background:rgba(26,46,92,.45);z-index:200;display:flex;align-items:flex-start;justify-content:center;padding:40px 16px;overflow:auto}
+  .modal{background:#fff;border-radius:var(--radius);box-shadow:0 20px 60px rgba(26,46,92,.35);max-width:640px;width:100%}
+  .modal .m-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:20px 24px;border-bottom:1px solid var(--line)}
+  .modal .m-body{padding:20px 24px}
+  .modal .x{cursor:pointer;font-size:22px;line-height:1;color:var(--muted);border:0;background:none;padding:4px 8px;border-radius:8px}
+  .modal .x:hover{background:rgba(26,46,92,.06);color:var(--ink)}
+  .kv2{display:grid;grid-template-columns:150px 1fr;gap:9px 14px;font-size:14px}
+  .kv2 .k{color:var(--muted);font-weight:500}
+  .kv2 .v{font-weight:600;word-break:break-word}
+  .kv2 .pii{color:var(--danger);font-size:11px;font-weight:700;margin-left:6px;text-transform:uppercase}
+  tbody tr.clik{cursor:pointer}
   .gslot{display:flex;justify-content:center;min-height:44px;margin:6px 0}
   .spin{display:inline-block;width:18px;height:18px;border:2px solid rgba(26,46,92,.2);border-top-color:var(--indigo);border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle}
   @keyframes sp{to{transform:rotate(360deg)}}
@@ -209,7 +220,7 @@ const state={
   student:{data:null, admit:null, error:null},
   admit:{data:null},
   leaderboard:{cls:9, scope:"district", value:null, rows:null},
-  admin:{page:"overview", regs:null, results:null, marksOut:null, centers:null, centerForm:{}, settings:null, filters:{cls:"all",district:"all"}},
+  admin:{page:"overview", regs:null, results:null, marksOut:null, centers:null, centerForm:{}, settings:null, studentDetail:null, filters:{cls:"all",district:"all"}},
 };
 
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
@@ -843,7 +854,7 @@ function admin(){
     <aside class="side"><div class="brand2">${KITE('#F4A300','#1A2E5C')} Admin</div>
       ${nav.map(([k,l,ic])=>`<a class="${p===k?'active':''}" onclick="state.admin.page='${k}';render()">${icon(ic)} ${l}</a>`).join('')}</aside>
     <main class="admin-main">${main}</main>
-  </div>`;
+  </div>${studentDetailModal()}`;
 }
 async function loadRegs(){try{state.admin.regs=await api('/api/admin/registrations?exam_id='+encodeURIComponent(state.exam.exam_id),{auth:true});}catch(e){state.admin.regs=[];toast(e.message,true);}render();}
 async function loadSettings(){try{state.admin.settings=await api('/api/admin/settings',{auth:true});}catch(e){state.admin.settings={demo_visible:false};}render();}
@@ -910,14 +921,56 @@ function adminRegs(){
   </div>
   <div class="card" style="overflow:auto"><table>
     <thead><tr><th>Student ID</th><th>Name</th><th>Class</th><th>Panchayat</th><th>Block</th><th>District</th><th>Status</th><th class="num">Marks</th></tr></thead>
-    <tbody>${rows.length?rows.map(r=>`<tr>
-      <td style="font-family:ui-monospace,monospace;font-size:13px">${esc(r.student_id)}</td>
+    <tbody>${rows.length?rows.map(r=>`<tr class="clik" onclick="openStudent('${esc(r.student_id)}')">
+      <td style="font-family:ui-monospace,monospace;font-size:13px;color:var(--indigo)">${esc(r.student_id)}</td>
       <td style="font-weight:600">${esc(r.student_name)}</td><td>${esc(r.class)}</td>
       <td class="muted">${esc(r.panchayat_name)}</td><td class="muted">${esc(r.block_name)}</td><td class="muted">${esc(r.district_name)}</td>
       <td><span class="tag ${r.status==='published'?'open':'draft'}">${esc(r.status)}</span></td>
       <td class="num" style="font-weight:700">${r.marks_obtained!=null?esc(r.marks_obtained):'—'}</td></tr>`).join(''):'<tr><td colspan="8" class="muted center" style="padding:30px">No registrations.</td></tr>'}</tbody>
   </table></div>
-  <p class="muted" style="font-size:13px;margin-top:10px">Showing ${rows.length} of ${state.admin.regs.length}.</p>`;
+  <p class="muted" style="font-size:13px;margin-top:10px">Showing ${rows.length} of ${state.admin.regs.length}. Click a row for full student details.</p>`;
+}
+async function openStudent(id){
+  state.admin.studentDetail={loading:true};render();
+  try{state.admin.studentDetail=await api('/api/admin/students/'+encodeURIComponent(id),{auth:true});}
+  catch(e){state.admin.studentDetail=null;toast(e.message,true);}
+  render();
+}
+function closeStudent(){state.admin.studentDetail=null;render();}
+function studentDetailModal(){
+  const sd=state.admin.studentDetail;if(!sd)return '';
+  if(sd.loading)return `<div class="modal-ov" onclick="closeStudent()"><div class="modal"><div class="m-body"><p><span class="spin"></span> Loading…</p></div></div></div>`;
+  const s=sd.student||{},regs=sd.registrations||[];
+  const row=(k,v,pii)=>`<div class="k">${k}${pii?'<span class="pii">private</span>':''}</div><div class="v">${v==null||v===''?'—':esc(v)}</div>`;
+  return `<div class="modal-ov" onclick="if(event.target===this)closeStudent()"><div class="modal">
+    <div class="m-head"><div><h3 style="font-size:20px;color:var(--indigo)">${esc(s.name)}</h3>
+      <div class="muted" style="font-size:13px">${esc(s.student_id)} · ${esc(s.username)}</div></div>
+      <button class="x" onclick="closeStudent()">×</button></div>
+    <div class="m-body">
+      <h4 style="font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:10px">Student</h4>
+      <div class="kv2">
+        ${row('Full name',s.name)}${row('Guardian',s.guardian_name)}
+        ${row('Class','Class '+s.class)}${row('Gender',s.gender)}
+        ${row('Medium',s.medium)}${row('Date of birth',s.dob,true)}
+        ${row('School',s.school_name,true)}
+      </div>
+      <h4 style="font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:18px 0 10px">Location</h4>
+      <div class="kv2">
+        ${row('District',s.district_name)}${row('Block',s.block_name)}
+        ${row('Panchayat',s.panchayat_name)}${row('Village',s.village_name,true)}
+      </div>
+      <h4 style="font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:18px 0 10px">Enrolled by</h4>
+      <div class="kv2">${row('Adult email',s.created_by_email||s.created_by_uid)}${row('Created',s.created_at&&s.created_at._seconds?new Date(s.created_at._seconds*1000).toLocaleString('en-IN'):(s.created_at||''))}</div>
+      <h4 style="font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:18px 0 10px">Registrations (${regs.length})</h4>
+      ${regs.length?`<div class="card" style="overflow:auto;box-shadow:none"><table><thead><tr><th>Exam</th><th>Centre</th><th>Roll</th><th>Status</th><th class="num">Marks</th></tr></thead><tbody>
+        ${regs.map(r=>`<tr><td>${esc(r.exam_id)}</td><td class="muted">${esc(r.center_name)}</td><td class="muted" style="font-size:13px">${esc(r.roll_number)}</td><td><span class="tag ${r.status==='published'?'open':'draft'}">${esc(r.status)}</span></td><td class="num" style="font-weight:700">${r.marks_obtained!=null?esc(r.marks_obtained):'—'}</td></tr>`).join('')}
+      </tbody></table></div>`:'<p class="muted">No registrations.</p>'}
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:18px">
+        <button class="btn ghost" onclick="viewAdmit('${esc(s.username)}','${esc(regs[0]?regs[0].exam_id:'')}')">${icon('dl')} Admit card</button>
+        <button class="btn indigo" onclick="closeStudent()">Close</button>
+      </div>
+    </div>
+  </div></div>`;
 }
 async function exportRegs(){
   try{const res=await fetch(API+'/api/admin/registrations?exam_id='+encodeURIComponent(state.exam.exam_id)+'&fmt=csv',{headers:{'Authorization':'Bearer '+state.idToken}});

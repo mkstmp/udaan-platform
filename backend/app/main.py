@@ -319,6 +319,15 @@ def admin_registrations(exam_id: str, cls: Optional[int] = None,
     return rows
 
 
+@app.get("/api/admin/students/{student_id}")
+def admin_student_detail(student_id: str, admin=Depends(auth.require_admin)):
+    """Full student record (incl. PII) + all their registrations. Admin only."""
+    s = db.get_student(student_id)
+    if not s:
+        raise HTTPException(404, "Student not found.")
+    return {"student": s, "registrations": db.registrations_for_student(student_id)}
+
+
 @app.get("/api/admin/results")
 def admin_results(exam_id: str, cls: Optional[int] = None,
                   district: Optional[str] = None, admin=Depends(auth.require_admin)):

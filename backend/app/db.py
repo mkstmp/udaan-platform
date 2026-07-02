@@ -25,6 +25,18 @@ def get_student_by_username(username):
         return d.to_dict()
     return None
 
+def get_student(student_id):
+    """Full student record by id (admin-only view — includes PII)."""
+    d = _db.collection("students").document(student_id).get()
+    return d.to_dict() if d.exists else None
+
+
+def registrations_for_student(student_id):
+    """All registrations for a student across exams (admin detail view)."""
+    q = _db.collection("registrations").where("student_id", "==", student_id).stream()
+    return [d.to_dict() for d in q]
+
+
 def username_exists(username_lc):
     q = _db.collection("students").where("username_lc", "==", username_lc).limit(1).stream()
     return any(True for _ in q)
