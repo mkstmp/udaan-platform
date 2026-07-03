@@ -178,7 +178,11 @@
   .spin{display:inline-block;width:18px;height:18px;border:2px solid rgba(26,46,92,.2);border-top-color:var(--indigo);border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle}
   @keyframes sp{to{transform:rotate(360deg)}}
   @media(max-width:820px){
-    nav.main a:not(.nav-cta):not(.admin-link){display:none}
+    /* Let the menu wrap to a second row instead of hiding links (mobile nav). */
+    .top .wrap{height:auto;min-height:56px;flex-wrap:wrap;padding:8px 0;gap:8px}
+    nav.main{margin-left:0;width:100%;flex-wrap:wrap;gap:4px;justify-content:center}
+    nav.main a{padding:7px 11px;font-size:13px}
+    .nav-cta{order:-1}
     .levels{grid-template-columns:1fr 1fr}.levels .lv:nth-child(2) .arrow{display:none}
     .grid3,.grid2{grid-template-columns:1fr}
     .score-wrap{grid-template-columns:1fr}.slices{grid-template-columns:1fr 1fr}
@@ -186,7 +190,14 @@
     .side{display:flex;gap:6px;overflow:auto;padding:10px}.side .brand2{display:none}
     .stat-grid{grid-template-columns:1fr 1fr}.admit .a-body{grid-template-columns:1fr}
     .row2{grid-template-columns:1fr}.hero-meta{gap:18px}
+    .hero{padding:36px 0 28px}
   }
+  /* Sign-in call-to-action box (make the Google button obviously the next step). */
+  .signin-cta{border:1.5px dashed var(--marigold);background:linear-gradient(180deg,#fffaf0,#fff);border-radius:14px;padding:18px 16px;text-align:center}
+  .signin-cta .lead{font-weight:700;color:var(--indigo);font-size:15px;margin:0 0 3px}
+  .signin-cta .sub{color:var(--muted);font-size:13px;margin:0 0 12px}
+  .signin-cta .arr{font-size:20px;color:var(--marigold-deep);line-height:1;margin-top:8px;animation:bob 1.4s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
 </style>
 </head>
 <body>
@@ -220,7 +231,7 @@ const state={
   student:{data:null, admit:null, error:null},
   admit:{data:null},
   leaderboard:{cls:9, scope:"district", value:null, rows:null},
-  admin:{page:"overview", examId:null, regs:null, results:null, marksOut:null, centers:null, centerForm:{}, settings:null, studentDetail:null, filters:{cls:"all",district:"all"}},
+  admin:{page:"overview", examId:null, regs:null, results:null, marksOut:null, centers:null, centerForm:{}, exams:null, settings:null, studentDetail:null, filters:{cls:"all",district:"all"}},
 };
 
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
@@ -262,6 +273,12 @@ function renderGoogleButtons(){
   document.querySelectorAll('.gslot').forEach(slot=>{slot.innerHTML='';google.accounts.id.renderButton(slot,{theme:'outline',size:'large',shape:'pill',text:'signin_with',width:280});});
 }
 function signOut(){state.idToken=null;state.identity=null;state.admin.regs=null;state.admin.results=null;if(window.google&&google.accounts)google.accounts.id.disableAutoSelect();render();}
+// A clearly-labelled call-to-action wrapper around the Google button.
+function signinCTA(lead,sub){
+  return `<div class="signin-cta"><p class="lead">${esc(lead||'Sign in with Google to continue')}</p>
+    <p class="sub">${esc(sub||'One tap — no password.')}</p>
+    <div class="arr" style="margin:0 0 8px">↓</div><div class="gslot"></div></div>`;
+}
 
 /* ---------- boot ---------- */
 async function boot(){
@@ -463,8 +480,8 @@ function regSignin(){
     <p class="hint center" style="margin-top:10px"><a onclick="signOut()" style="cursor:pointer;color:var(--indigo)">Sign out</a></p>`;
   }
   return `<h3 style="font-size:20px;color:var(--indigo);margin-bottom:6px">Sign in to enroll</h3>
-  <p class="muted" style="font-size:14px;margin:0 0 18px">A parent or teacher signs in once with Google. This is the real-identity check — no OTP, no SMS. Students don't need their own email.</p>
-  <div class="gslot"></div>
+  <p class="muted" style="font-size:14px;margin:0 0 16px">A parent or teacher signs in once with Google — no OTP, no SMS.</p>
+  ${signinCTA('Sign in with Google to enroll a student','This is the first step. One tap — no password.')}
   <div class="hint center" style="margin-top:12px">Teachers can enroll a whole batch under one login.</div>`;
 }
 function regStudent(){
@@ -632,8 +649,8 @@ function adultDash(){
       <div class="backlink" onclick="go('home')">← Home</div>
       <div class="card pad"><span class="eyebrow">Parent / teacher</span>
         <h2 style="font-size:26px;color:var(--indigo);margin:8px 0 6px">Sign in to manage students</h2>
-        <p class="muted" style="font-size:14px;margin:0 0 18px">Your Google login is the real-identity check. You'll see full details for students you enrolled — and only those.</p>
-        <div class="gslot"></div></div></div></section>`);
+        <p class="muted" style="font-size:14px;margin:0 0 16px">You'll see full details only for students you enrolled.</p>
+        ${signinCTA('Sign in with Google','See and manage your students.')}</div></div></section>`);
   }
   if(_mineCache===null){loadMine();return shell(`<section class="band"><div class="wrap"><p><span class="spin"></span> Loading your students…</p></div></section>`);}
   const mine=_mineCache;
@@ -851,13 +868,14 @@ function admin(){
     <section class="band"><div class="wrap" style="max-width:460px">
       <div class="card pad"><span class="eyebrow">Admin</span>
         <h2 style="font-size:24px;color:var(--indigo);margin:8px 0 6px">Admin sign in</h2>
-        <p class="muted" style="font-size:14px;margin:0 0 16px">Sign in with an allowlisted Google account. Access is gated server-side by the admins list.</p>
-        <div class="gslot"></div></div></div></section>`;
+        <p class="muted" style="font-size:14px;margin:0 0 16px">Use an allowlisted Google account.</p>
+        ${signinCTA('Sign in with Google','Admin access is checked on the server.')}</div></div></section>`;
   }
   const p=state.admin.page;
-  const nav=[["overview","Overview","chart"],["registrations","Registrations","user"],["centers","Exam centres","book"],["marks","Upload marks","dl"],["results","Results & slices","chart"]];
+  const nav=[["overview","Overview","chart"],["exams","Exams","book"],["registrations","Registrations","user"],["centers","Exam centres","book"],["marks","Upload marks","dl"],["results","Results & slices","chart"]];
   let main='';
   if(p==='overview')main=adminOverview();else if(p==='registrations')main=adminRegs();
+  else if(p==='exams')main=adminExams();
   else if(p==='centers')main=adminCenters();
   else if(p==='marks')main=adminMarks();else if(p==='results')main=adminResults();
   return `
@@ -1157,6 +1175,76 @@ async function createCenter(){
 async function toggleCenter(id,active){
   try{await api('/api/admin/centers/'+encodeURIComponent(id),{method:'PATCH',body:{active:active},auth:true});
     state.admin.centers=null;state.centers=null;toast('Updated ✓');render();}
+  catch(e){toast(e.message,true);}
+}
+
+/* ---------- admin: exams ---------- */
+async function loadExams(){try{state.admin.exams=await api('/api/admin/exams',{auth:true});}catch(e){state.admin.exams=[];toast(e.message,true);}render();}
+function slugify(s){return (s||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,44);}
+function adminExams(){
+  if(state.admin.exams===null){loadExams();return `<p><span class="spin"></span> Loading exams…</p>`;}
+  const ex=state.admin.exams;
+  const statuses=['draft','open','closed','completed'];
+  const rows=ex.length?ex.map(e=>`<tr>
+    <td style="font-weight:600">${esc(e.name)}${e.demo?' <span class="tag draft">demo</span>':''}<div class="muted" style="font-size:12px;font-weight:400">${esc(e.exam_id)} · ${esc(e.subject||'')}</div></td>
+    <td class="muted">${esc(fmtDate(e.exam_date))}</td>
+    <td class="muted" style="font-size:13px">${esc((e.eligible_classes||[]).join(', '))}</td>
+    <td><select class="input" style="padding:6px 8px;font-size:13px" onchange="setExamStatus('${esc(e.exam_id)}',this.value)">${statuses.map(s=>`<option ${e.status===s?'selected':''}>${s}</option>`).join('')}</select></td>
+    <td><a onclick="toggleExamPublished('${esc(e.exam_id)}',${e.results_published?'false':'true'})" style="color:var(--indigo);cursor:pointer;font-weight:600;font-size:13px">${e.results_published?'Published ✓':'Publish'}</a></td>
+  </tr>`).join(''):'<tr><td colspan="5" class="muted center" style="padding:24px">No exams yet.</td></tr>';
+  const yr=new Date().getFullYear();
+  return `<h2 style="font-size:26px;color:var(--indigo);margin-bottom:4px">Exams</h2>
+  <p class="muted" style="margin:0 0 20px">Create a new exam cycle and control its lifecycle: <b>draft → open</b> (registration) → <b>closed</b> → <b>completed</b>. Publishing results is done from Upload&nbsp;marks after ranks are computed.</p>
+  <div class="grid2" style="align-items:start">
+    <div class="card pad">
+      <h4 style="font-size:16px;margin-bottom:14px">Create an exam</h4>
+      <div class="field"><label>Name <span class="req">*</span></label><input class="input" id="ex_name" placeholder="Udaan Talent Test — November ${yr}"></div>
+      <div class="row2">
+        <div class="field"><label>Subject</label><input class="input" id="ex_subj" value="Mathematics"></div>
+        <div class="field"><label>Exam date <span class="req">*</span></label><input class="input" id="ex_date" type="date"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Start time</label><input class="input" id="ex_start" placeholder="10:00 AM"></div>
+        <div class="field"><label>End time</label><input class="input" id="ex_end" placeholder="12:00 PM"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Reporting time</label><input class="input" id="ex_report" placeholder="9:30 AM"></div>
+        <div class="field"><label>Registration closes</label><input class="input" id="ex_regend" type="date"></div>
+      </div>
+      <div class="field"><label>Eligible classes</label>
+        <div class="seg" id="ex_classes">${[7,8,9,10].map(c=>`<label class="opt" style="display:inline-flex;gap:6px;align-items:center;cursor:pointer"><input type="checkbox" value="${c}" checked> Class ${c}</label>`).join('')}</div></div>
+      <div class="field"><label>Status</label><select class="input" id="ex_status"><option value="open" selected>open (registration)</option><option value="draft">draft</option><option value="closed">closed</option><option value="completed">completed</option></select></div>
+      <button class="btn primary block" onclick="createExam()">${icon('check')} Create exam</button>
+    </div>
+    <div class="card" style="overflow:auto">
+      <table><thead><tr><th>Exam</th><th>Date</th><th>Classes</th><th>Status</th><th>Results</th></tr></thead>
+      <tbody>${rows}</tbody></table>
+    </div>
+  </div>`;
+}
+async function createExam(){
+  const name=val('ex_name');if(!name){toast('Enter an exam name',true);return;}
+  const date=val('ex_date');if(!date){toast('Pick an exam date',true);return;}
+  const classes=[...document.querySelectorAll('#ex_classes input:checked')].map(c=>+c.value);
+  if(!classes.length){toast('Select at least one class',true);return;}
+  const eid=slugify(name)+'-'+date;
+  const payload={exam_id:eid,name:name,subject:val('ex_subj')||'Mathematics',exam_date:date,
+    exam_start_time:val('ex_start')||null,exam_end_time:val('ex_end')||null,reporting_time:val('ex_report')||null,
+    registration_end:val('ex_regend')||null,eligible_classes:classes,
+    status:document.getElementById('ex_status').value,results_published:false};
+  toast('Creating exam…');
+  try{await api('/api/admin/exams',{method:'POST',body:payload,auth:true});
+    state.admin.exams=null;await refreshExams();toast('Exam created ✓');render();}
+  catch(e){toast(e.message,true);}
+}
+async function setExamStatus(id,status){
+  try{await api('/api/admin/exams/'+encodeURIComponent(id),{method:'PATCH',body:{status:status},auth:true});
+    state.admin.exams=null;await refreshExams();toast('Status → '+status);render();}
+  catch(e){toast(e.message,true);}
+}
+async function toggleExamPublished(id,pub){
+  try{await api('/api/admin/exams/'+encodeURIComponent(id),{method:'PATCH',body:{results_published:pub},auth:true});
+    state.admin.exams=null;await refreshExams();toast(pub?'Marked published':'Unpublished');render();}
   catch(e){toast(e.message,true);}
 }
 

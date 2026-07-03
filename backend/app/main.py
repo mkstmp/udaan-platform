@@ -208,6 +208,67 @@ def list_my_students(adult=Depends(auth.require_adult)):
 # ADMIN — Google OAuth + email allowlist
 # ----------------------------------------------------------------------------
 
+_EXAM_STATUSES = {"draft", "open", "closed", "completed"}
+
+
+class ExamIn(BaseModel):
+    exam_id: str
+    name: str
+    subject: str = "Mathematics"
+    exam_date: Optional[str] = None
+    exam_start_time: Optional[str] = None
+    exam_end_time: Optional[str] = None
+    reporting_time: Optional[str] = None
+    registration_start: Optional[str] = None
+    registration_end: Optional[str] = None
+    eligible_classes: list[int] = [7, 8, 9, 10]
+    status: str = "draft"
+    results_published: bool = False
+
+
+class ExamPatch(BaseModel):
+    name: Optional[str] = None
+    subject: Optional[str] = None
+    exam_date: Optional[str] = None
+    exam_start_time: Optional[str] = None
+    exam_end_time: Optional[str] = None
+    reporting_time: Optional[str] = None
+    registration_start: Optional[str] = None
+    registration_end: Optional[str] = None
+    eligible_classes: Optional[list[int]] = None
+    status: Optional[str] = None
+    results_published: Optional[bool] = None
+
+
+@app.get("/api/admin/exams")
+def list_admin_exams(admin=Depends(auth.require_admin)):
+    return db.list_all_exams()
+
+
+@app.post("/api/admin/exams")
+def create_exam(payload: ExamIn, admin=Depends(auth.require_admin)):
+    if payload.status not in _EXAM_STATUSES:
+        raise HTTPException(400, "Invalid status.")
+    if not payload.exam_id.strip():
+        raise HTTPException(400, "exam_id required.")
+    if db.exam_exists(payload.exam_id):
+        raise HTTPException(400, "An exam with that id already exists.")
+    return db.create_exam(payload.model_dump())
+
+
+@app.patch("/api/admin/exams/{exam_id}")
+def patch_exam(exam_id: str, payload: ExamPatch, admin=Depends(auth.require_admin)):
+    patch = {k: v for k, v in payload.model_dump().items() if v is not None}
+    if "status" in patch and patch["status"] not in _EXAM_STATUSES:
+        raise HTTPException(400, "Invalid status.")
+    if not patch:
+        raise HTTPException(400, "Nothing to update.")
+    res = db.update_exam(exam_id, patch)
+    if not res:
+        raise HTTPException(404, "Exam not found.")
+    return res
+
+
 class SettingsPatch(BaseModel):
     demo_visible: Optional[bool] = None
 

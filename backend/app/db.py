@@ -58,6 +58,34 @@ def is_admin(email):
     return _db.collection("admins").document(email).get().exists
 
 
+def list_all_exams():
+    """Admin: every exam (incl. draft/demo), sorted by date."""
+    rows = [d.to_dict() for d in _db.collection("exams").stream()]
+    rows.sort(key=lambda e: (e.get("exam_date") or "", e.get("name") or ""))
+    return rows
+
+
+def exam_exists(exam_id):
+    return _db.collection("exams").document(exam_id).get().exists
+
+
+def create_exam(data):
+    ref = _db.collection("exams").document(data["exam_id"])
+    if ref.get().exists:
+        return None
+    ref.set({**data, "created_at": firestore.SERVER_TIMESTAMP,
+             "updated_at": firestore.SERVER_TIMESTAMP})
+    return {"exam_id": data["exam_id"]}
+
+
+def update_exam(exam_id, patch):
+    ref = _db.collection("exams").document(exam_id)
+    if not ref.get().exists:
+        return None
+    ref.update({**patch, "updated_at": firestore.SERVER_TIMESTAMP})
+    return {"exam_id": exam_id, "updated": True}
+
+
 def get_settings():
     """App-wide settings (e.g. demo_visible). Defaults when the doc is absent."""
     d = _db.collection("settings").document("app").get()
