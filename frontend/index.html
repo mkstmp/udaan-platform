@@ -37,6 +37,8 @@
   .nav-cta{background:var(--indigo);color:#fff !important;padding:9px 16px !important;border-radius:10px;font-weight:600 !important}
   .nav-cta:hover{background:var(--indigo-2) !important}
   .admin-link{color:#9aa0ad !important;font-size:13px !important}
+  .hamburger{display:none;margin-left:auto;background:none;border:1.5px solid var(--line);border-radius:10px;width:42px;height:42px;font-size:20px;color:var(--indigo);cursor:pointer;align-items:center;justify-content:center}
+  .hamburger:hover{border-color:var(--indigo)}
   .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;cursor:pointer;font-weight:600;font-size:15px;padding:13px 22px;border-radius:12px;transition:.15s;text-decoration:none}
   .btn.lg{padding:15px 26px;font-size:16px}
   .btn.primary{background:var(--marigold);color:#3a2a00;box-shadow:0 6px 16px rgba(244,163,0,.28)}
@@ -178,11 +180,14 @@
   .spin{display:inline-block;width:18px;height:18px;border:2px solid rgba(26,46,92,.2);border-top-color:var(--indigo);border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle}
   @keyframes sp{to{transform:rotate(360deg)}}
   @media(max-width:820px){
-    /* Let the menu wrap to a second row instead of hiding links (mobile nav). */
-    .top .wrap{height:auto;min-height:56px;flex-wrap:wrap;padding:8px 0;gap:8px}
-    nav.main{margin-left:0;width:100%;flex-wrap:wrap;gap:4px;justify-content:center}
-    nav.main a{padding:7px 11px;font-size:13px}
-    .nav-cta{order:-1}
+    /* Mobile: collapse the public nav behind a hamburger. */
+    .hamburger{display:inline-flex}
+    nav.main{position:absolute;top:100%;left:0;right:0;margin:0;display:none;flex-direction:column;
+      align-items:stretch;gap:2px;background:var(--cream);border-bottom:1px solid var(--line);
+      padding:8px;box-shadow:0 12px 24px rgba(26,46,92,.10)}
+    nav.main.open{display:flex}
+    nav.main a{width:100%;padding:13px 14px;font-size:15px;border-radius:10px}
+    .nav-cta{text-align:center}
     .levels{grid-template-columns:1fr 1fr}.levels .lv:nth-child(2) .arrow{display:none}
     .grid3,.grid2{grid-template-columns:1fr}
     .score-wrap{grid-template-columns:1fr}.slices{grid-template-columns:1fr 1fr}
@@ -221,7 +226,7 @@ const KITE=(c1='#F4A300',c2='#1A2E5C')=>`
 
 /* ---------- global state ---------- */
 const state={
-  route:"home", ready:false,
+  route:"home", ready:false, navOpen:false,
   clientId:"", exams:[], exam:null,        // current exam
   demoVisible:false, viewExamId:null,      // which exam's results we're viewing
   idToken:null, identity:null, role:"Parent",
@@ -236,7 +241,7 @@ const state={
 
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function toast(msg,err){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(err?' err':'');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2800);}
-function go(route){state.route=route;window.scrollTo(0,0);render();}
+function go(route){state.route=route;state.navOpen=false;window.scrollTo(0,0);render();}
 function fmtDate(d){if(!d)return'';try{const x=new Date(d);if(!isNaN(x))return x.toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'});}catch(e){}return d;}
 
 /* ---------- API helper ---------- */
@@ -338,13 +343,15 @@ function topbar(){
   const links=[["home","Home"],["papers","Sample Papers"],["result","Results"],["leaderboard","Leaderboard"],["studentLogin","Student login"]];
   return `<header class="top"><div class="wrap">
     <div class="brand" onclick="go('home')">${KITE()}<span class="name"><b>Ud</b><span>aan</span></span></div>
-    <nav class="main">
+    <button class="hamburger" aria-label="Menu" aria-expanded="${state.navOpen?'true':'false'}" onclick="toggleNav()">${state.navOpen?'✕':'☰'}</button>
+    <nav class="main ${state.navOpen?'open':''}">
       ${links.map(([r,l])=>`<a class="${state.route===r?'active':''}" onclick="go('${r}')">${l}</a>`).join('')}
       <a class="nav-cta" onclick="go('register')">Register</a>
       <a class="admin-link" onclick="go('admin')">Admin</a>
     </nav>
   </div></header>`;
 }
+function toggleNav(){state.navOpen=!state.navOpen;render();}
 function footer(){
   return `<footer><div class="wrap">
     <div style="display:flex;gap:9px;align-items:center">${KITE()}<span>Udaan Academic Excellence Program</span></div>
