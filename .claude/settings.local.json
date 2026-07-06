@@ -85,7 +85,15 @@
       "Bash(python3 -c \"import sys,json;d=json.load\\(sys.stdin\\);print\\('  marks:',d.get\\('marks_obtained'\\),'| panchayat rank:',d.get\\('ranks',{}\\).get\\('panchayat'\\)\\)\")",
       "Bash(git -c user.email=mukesh.sonepur@gmail.com -c user.name=Mukesh commit -q -m 'Fix 500 on admit card when a registration has no center_id *)",
       "Bash(git -c user.email=mukesh.sonepur@gmail.com -c user.name=Mukesh commit -q -m 'Address tester feedback: clearer sign-in, admin Exams UI, mobile nav, trim copy *)",
-      "Bash(git -c user.email=mukesh.sonepur@gmail.com -c user.name=Mukesh commit -q -m 'Mobile: proper hamburger menu for the public nav \\(desktop unchanged\\) *)"
+      "Bash(git -c user.email=mukesh.sonepur@gmail.com -c user.name=Mukesh commit -q -m 'Mobile: proper hamburger menu for the public nav \\(desktop unchanged\\) *)",
+      "Bash(curl -s -o /dev/null -w \"  GET https://hariharexam.com/ -> %{http_code}\\\\n\" https://hariharexam.com/)",
+      "Bash(curl -s https://hariharexam.com/)",
+      "Bash(curl -s https://hariharexam.com/api/config)",
+      "Bash(dig +short A www.hariharexam.com)",
+      "Bash(dig +short CNAME www.hariharexam.com)",
+      "Bash(curl -s -o /dev/null -w \" GET https://www.hariharexam.com/ -> %{http_code}\\\\n\" --max-time 10 https://www.hariharexam.com/)",
+      "Bash(dig +short A hariharexam.com)",
+      "Bash(git -c user.email=mukesh.sonepur@gmail.com -c user.name=Mukesh commit -q -m 'Docs: custom domain hariharexam.com is live; note OAuth origins to add *)"
     ]
   }
 }

@@ -14,7 +14,8 @@ same-origin, so the whole product runs as **one Cloud Run service**.
 
 | Thing | Value |
 |---|---|
-| **App URL (primary)** | https://udaan-platform-260701.web.app (Firebase Hosting → Cloud Run) |
+| **App URL (custom domain)** | https://hariharexam.com (Firebase Hosting → Cloud Run) |
+| Firebase Hosting URL | https://udaan-platform-260701.web.app |
 | Cloud Run URL (direct) | https://udaan-api-md45haetfq-el.a.run.app |
 | GCP project | `udaan-platform-260701` (region `asia-south1` — Mumbai) |
 | Firestore | Native, `asia-south1` (seeded: 1 exam, 2 centres, 10 papers, admin allowlist) |
@@ -94,8 +95,10 @@ adult / admin) is live. The admin console is gated to the email(s) in Firestore
 
 For sign-in to succeed in the browser, the OAuth client
 (`623704019791-…apps.googleusercontent.com`) must have:
-- **Authorized JavaScript origins** including `https://udaan-platform-260701.web.app`
-  (the primary URL) and any custom domain.
+- **Authorized JavaScript origins** including `https://hariharexam.com`,
+  `https://www.hariharexam.com`, and `https://udaan-platform-260701.web.app`.
+  (The frontend uses relative `/api` URLs, so it needs no per-domain code change —
+  only these origins must be authorized for Google sign-in.)
 - An **OAuth consent screen** that's either **Published** (so any parent/teacher
   can sign in) or in Testing with the users added under *Test users*.
 
