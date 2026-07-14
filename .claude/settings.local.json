@@ -102,7 +102,8 @@
       "Bash(curl -s __TRACKED_VAR__/api/sponsors?exam_id=udaan-2026-08-math)",
       "Bash(curl -s -o /dev/null -w '  GET  /api/admin/sponsors -> %{http_code}\\\\n' __TRACKED_VAR__/api/admin/sponsors?exam_id=udaan-2026-08-math)",
       "Bash(curl -s -o /dev/null -w '  POST /api/admin/sponsors/logo -> %{http_code}\\\\n' -X POST __TRACKED_VAR__/api/admin/sponsors/logo -H 'Content-Type: application/json' -d '{\"content_type\":\"image/png\",\"data\":\"x\"}')",
-      "Bash(git -c user.email=mukesh.sonepur@gmail.com -c user.name=Mukesh commit -q -m 'Sponsors Phase 1: admin management \\(with logo upload\\) + public tiered wall *)"
+      "Bash(git -c user.email=mukesh.sonepur@gmail.com -c user.name=Mukesh commit -q -m 'Sponsors Phase 1: admin management \\(with logo upload\\) + public tiered wall *)",
+      "Bash(git -c user.email=mukesh.sonepur@gmail.com -c user.name=Mukesh commit -q -m 'Sponsors: add a public '\\\\''Sponsors'\\\\'' nav tab \\(dedicated page + empty-state\\) *)"
     ]
   }
 }

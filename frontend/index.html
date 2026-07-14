@@ -323,8 +323,8 @@ async function loadSponsors(){
   catch(e){state.sponsors=[];}
   render();
 }
-// Homepage sponsor wall — grouped by tier, hidden when there are none.
-function sponsorWall(){
+// Tier-grouped sponsor cards (shared by the homepage wall + the Sponsors page).
+function sponsorGroups(){
   const list=state.sponsors;if(!list||!list.length)return '';
   const tiers=[['platinum','Platinum'],['gold','Gold'],['silver','Silver']];
   const scopeLabel=s=>s.scope&&s.scope!=='program'?`${esc(s.scope_value)} ${s.scope.charAt(0).toUpperCase()+s.scope.slice(1)}`:'Program partner';
@@ -332,14 +332,34 @@ function sponsorWall(){
     ${s.logo_url?`<img src="${esc(s.logo_url)}" alt="${esc(s.name)}">`:`<div class="ph">${esc((s.name||'?')[0])}</div>`}
     <div class="nm">${s.website?`<a href="${esc(s.website)}" target="_blank" rel="noopener" style="text-decoration:none">${esc(s.name)}</a>`:esc(s.name)}</div>
     <div class="sc">${scopeLabel(s)}${s.blurb?' · '+esc(s.blurb):''}</div></div>`;
-  const groups=tiers.map(([t,label])=>{const rows=list.filter(s=>s.tier===t);if(!rows.length)return '';
+  return tiers.map(([t,label])=>{const rows=list.filter(s=>s.tier===t);if(!rows.length)return '';
     return `<div class="sp-tier ${t}"><div class="tl"><span class="dot"></span>${label}</div>
       <div class="sp-grid ${t}">${rows.map(card).join('')}</div></div>`;}).join('');
+}
+const _SPONSOR_INTRO='Sponsors fund the prize pool and are celebrated at the prize distribution. They have <b>no access to and no influence on</b> registrations, marks, or ranks — results are computed purely on marks.';
+// Homepage section — hidden entirely when there are no sponsors.
+function sponsorWall(){
+  const g=sponsorGroups();if(!g)return '';
   return `<section class="band tint"><div class="wrap">
     <div class="sec-head"><span class="eyebrow">Made possible by</span><h2>Our sponsors</h2>
-      <p>Sponsors fund the prize pool and are celebrated at the prize distribution. They have <b>no access to and no influence on</b> registrations, marks, or ranks — results are computed purely on marks.</p></div>
-    <div class="sponsors">${groups}</div>
+      <p>${_SPONSOR_INTRO}</p></div>
+    <div class="sponsors">${g}</div>
   </div></section>`;
+}
+// Dedicated public Sponsors page (nav tab).
+function sponsorsPage(){
+  let body;
+  if(state.sponsors===null)body=`<p><span class="spin"></span> Loading sponsors…</p>`;
+  else{const g=sponsorGroups();
+    body=g?`<div class="sponsors">${g}</div>`
+          :`<div class="card pad center"><h3 style="color:var(--indigo);margin-bottom:8px">Sponsors coming soon</h3>
+             <p class="muted" style="margin:0">Want to help talented rural students reach a bigger sky? Individuals, businesses, schools and NGOs can sponsor a prize — at Panchayat, Block, District or Program level. Reach out to become a sponsor.</p></div>`;}
+  return shell(`<section class="band"><div class="wrap">
+    <div class="backlink" onclick="go('home')">← Home</div>
+    <div class="sec-head"><span class="eyebrow">Made possible by</span><h2>Our sponsors</h2>
+      <p>${_SPONSOR_INTRO}</p></div>
+    ${body}
+  </div></section>`);
 }
 // Re-fetch exams+config after an admin toggles demo visibility.
 async function refreshExams(){
@@ -385,7 +405,7 @@ function banner(){
   else b.innerHTML='Udaan Academic Excellence Program';
 }
 function topbar(){
-  const links=[["home","Home"],["papers","Sample Papers"],["result","Results"],["leaderboard","Leaderboard"],["studentLogin","Student login"]];
+  const links=[["home","Home"],["papers","Sample Papers"],["result","Results"],["leaderboard","Leaderboard"],["sponsors","Sponsors"],["studentLogin","Student login"]];
   return `<header class="top"><div class="wrap">
     <div class="brand" onclick="go('home')">${KITE()}<span class="name"><b>Ud</b><span>aan</span></span></div>
     <button class="hamburger" aria-label="Menu" aria-expanded="${state.navOpen?'true':'false'}" onclick="toggleNav()">${state.navOpen?'✕':'☰'}</button>
@@ -1433,6 +1453,7 @@ function render(){
     case 'admit':html=admit();break;
     case 'result':html=result();break;
     case 'leaderboard':html=leaderboard();break;
+    case 'sponsors':html=sponsorsPage();break;
     case 'admin':html=admin();break;
     default:html=home();
   }
