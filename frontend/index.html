@@ -563,28 +563,48 @@ function regStudent(){
   const clsOpts=clsList.map(c=>`<div class="opt ${d.cls==c?'on':''}" onclick="setReg('cls',${c})">Class ${c}</div>`).join('');
   const genOpts=["Girl","Boy","Other"].map(g=>`<div class="opt ${d.gender==g?'on':''}" onclick="setReg('gender','${g}')">${g}</div>`).join('');
   const medOpts=["Hindi","English"].map(m=>`<div class="opt ${d.medium==m?'on':''}" onclick="setReg('medium','${m}')">${m}</div>`).join('');
+  const nameFilter="this.value=this.value.replace(/[^A-Za-z ]/g,'')";
   return `<h3 style="font-size:20px;color:var(--indigo);margin-bottom:16px">Student details</h3>
-  <div class="field"><label>Student's full name <span class="req">*</span></label><input class="input" id="sname" value="${esc(d.name||'')}"><div class="hint">Their login username is created from this name.</div></div>
-  <div class="field"><label>Father / guardian name <span class="req">*</span></label><input class="input" id="fname" value="${esc(d.guardian||'')}"></div>
+  <div class="field"><label>Student's full name <span class="req">*</span></label><input class="input" id="sname" value="${esc(d.name||'')}" oninput="${nameFilter}"><div class="hint">English letters only. Their login username is created from this name.</div></div>
+  <div class="field"><label>Father / guardian name <span class="req">*</span></label><input class="input" id="fname" value="${esc(d.guardian||'')}" oninput="${nameFilter}"><div class="hint">English letters only.</div></div>
   <div class="field"><label>Class <span class="req">*</span></label><div class="seg">${clsOpts}</div></div>
   <div class="field"><label>School name <span class="req">*</span></label><input class="input" id="school" value="${esc(d.school||'')}" placeholder="e.g. Govt. High School, Benipur"><div class="hint">Stored for records — never printed on the admit card.</div></div>
   <div class="row2">
-    <div class="field"><label>Date of birth</label><input class="input" id="dob" type="date" value="${esc(d.dob||'')}"><div class="hint">Private — never on admit card or results.</div></div>
+    ${dobField()}
     <div class="field"><label>Preferred medium</label><div class="seg">${medOpts}</div></div>
   </div>
   <div class="field"><label>Gender</label><div class="seg">${genOpts}</div></div>
   <button class="btn primary block lg" onclick="saveStudent()">Continue →</button>`;
 }
+// DOB as Day / Month / Year dropdowns — one tap for the year (no calendar scrolling).
+function dobField(){
+  const d=state.reg.data,yNow=new Date().getFullYear();
+  const days=[];for(let i=1;i<=31;i++)days.push(String(i).padStart(2,'0'));
+  const months=[["01","Jan"],["02","Feb"],["03","Mar"],["04","Apr"],["05","May"],["06","Jun"],["07","Jul"],["08","Aug"],["09","Sep"],["10","Oct"],["11","Nov"],["12","Dec"]];
+  const years=[];for(let y=yNow-4;y>=yNow-22;y--)years.push(String(y));
+  const opt=(v,l,sel)=>`<option value="${v}" ${String(sel||'')===v?'selected':''}>${l}</option>`;
+  return `<div class="field"><label>Date of birth</label>
+    <div style="display:grid;grid-template-columns:1fr 1.15fr 1.1fr;gap:8px">
+      <select class="input" onchange="state.reg.data.dob_d=this.value"><option value="">Day</option>${days.map(x=>opt(x,String(+x),d.dob_d)).join('')}</select>
+      <select class="input" onchange="state.reg.data.dob_m=this.value"><option value="">Month</option>${months.map(([v,l])=>opt(v,l,d.dob_m)).join('')}</select>
+      <select class="input" onchange="state.reg.data.dob_y=this.value"><option value="">Year</option>${years.map(y=>opt(y,y,d.dob_y)).join('')}</select>
+    </div><div class="hint">Private — never on admit card or results.</div></div>`;
+}
 function val(id){const e=document.getElementById(id);return e?e.value.trim():'';}
 // Preserve typed text before a seg-button click re-renders the student step.
 function snapStudentInputs(){const d=state.reg.data;
-  [['sname','name'],['fname','guardian'],['school','school'],['dob','dob']].forEach(([id,k])=>{
+  [['sname','name'],['fname','guardian'],['school','school']].forEach(([id,k])=>{
     const el=document.getElementById(id);if(el)d[k]=el.value.trim();});}
 function setReg(k,v){snapStudentInputs();state.reg.data[k]=v;render();}
 function saveStudent(){
   const d=state.reg.data;
-  d.name=val('sname');d.guardian=val('fname');d.school=val('school');d.dob=val('dob');
+  d.name=val('sname');d.guardian=val('fname');d.school=val('school');
+  const dd=d.dob_d,mm=d.dob_m,yy=d.dob_y;
+  d.dob=(dd&&mm&&yy)?`${yy}-${mm}-${dd}`:'';
   if(!d.name||!d.guardian||!d.cls||!d.school){toast('Please fill name, guardian, class and school',true);return;}
+  const NAME_RE=/^[A-Za-z ]+$/;
+  if(!NAME_RE.test(d.name)){toast('Student name: use only English letters (A–Z) and spaces.',true);return;}
+  if(!NAME_RE.test(d.guardian)){toast('Guardian name: use only English letters (A–Z) and spaces.',true);return;}
   if(!d.medium)d.medium='Hindi';
   state.reg.step=2;loadLocationData();render();
 }
@@ -841,7 +861,7 @@ function admit(){
         <div style="display:flex;gap:10px;align-items:center">${KITE('#F4A300','#fff')}<div><h3>${esc(c.exam_name)}</h3><div style="font-size:12px;color:#cdd6ea">${esc(fmtDate(c.exam_date))} · ${esc(c.exam_time)}</div></div></div>
         <div style="text-align:right"><div style="font-size:11px;color:#cdd6ea;letter-spacing:.1em">ROLL NO.</div><div style="font-family:Fraunces;font-size:18px">${esc(c.roll_number)}</div></div>
       </div>
-      <div class="a-body">
+      <div class="a-body" style="grid-template-columns:1fr">
         <div class="kv">
           <div class="k">Student</div><div class="v">${esc(c.name)}</div>
           <div class="k">Guardian</div><div class="v">${esc(c.guardian_name||'—')}</div>
@@ -851,7 +871,6 @@ function admit(){
           <div class="k">Block / District</div><div class="v">${esc(c.block_name)}, ${esc(c.district_name)}</div>
           <div class="k">Reporting</div><div class="v">${esc(c.reporting_time)}</div>
         </div>
-        <div><div class="qr" title="QR"></div><div style="font-size:11px;color:var(--muted);text-align:center;margin-top:6px">Scan at gate</div></div>
       </div>
       <div class="a-note"><b style="color:var(--ink)">Instructions:</b> ${esc(c.instructions)}</div>
     </div>
