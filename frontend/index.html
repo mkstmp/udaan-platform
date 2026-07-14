@@ -1329,7 +1329,7 @@ async function loadAdminSponsors(){
   catch(e){state.admin.sponsors=[];toast(e.message,true);}render();
 }
 function spSnap(){const f=state.admin.sponsorForm;
-  [['sp_name','name'],['sp_web','website'],['sp_blurb','blurb'],['sp_amount','amount'],['sp_note','note'],['sp_order','display_order']]
+  [['sp_name','name'],['sp_web','website'],['sp_blurb','blurb'],['sp_note','note'],['sp_order','display_order']]
     .forEach(([id,k])=>{const el=document.getElementById(id);if(el)f[k]=el.value.trim();});}
 function spSet(k,v){spSnap();const f=state.admin.sponsorForm;f[k]=v;
   if(k==='scope'){f.district='';f.block='';f.panchayat_code='';f.panchayat_name='';}
@@ -1371,7 +1371,7 @@ function adminSponsors(){
   const scopeTxt=s=>s.scope==='program'?'Program':`${esc(s.scope_value||'')} (${esc(s.scope)})`;
   const rows=cs.length?cs.map(s=>`<tr>
     <td>${s.logo_url?`<img class="sp-thumb" src="${esc(s.logo_url)}" alt="">`:'<div class="sp-thumb" style="display:grid;place-items:center;font-weight:700;color:var(--indigo)">'+esc((s.name||'?')[0])+'</div>'}</td>
-    <td style="font-weight:600">${esc(s.name)}${s.amount?`<div class="muted" style="font-size:12px;font-weight:400">₹${esc(s.amount)}</div>`:''}</td>
+    <td style="font-weight:600">${esc(s.name)}</td>
     <td>${tierBadge(s.tier)}</td>
     <td class="muted" style="font-size:13px">${scopeTxt(s)}</td>
     <td><a onclick="toggleSponsor('${esc(s.sponsor_id)}',${s.active?'false':'true'})" style="color:var(--indigo);cursor:pointer;font-weight:600;font-size:13px">${s.active?'Hide':'Show'}</a></td>
@@ -1396,10 +1396,9 @@ function adminSponsors(){
       <div class="field"><label>Website (optional)</label><input class="input" id="sp_web" value="${esc(f.website||'')}" placeholder="https://…"></div>
       <div class="field"><label>Short blurb (optional, shown on wall)</label><input class="input" id="sp_blurb" value="${esc(f.blurb||'')}" placeholder="e.g. Sweets & Namkeen since 1985"></div>
       <div class="row2">
-        <div class="field"><label>Amount ₹ (private)</label><input class="input" id="sp_amount" type="number" value="${esc(f.amount||'')}"></div>
         <div class="field"><label>Display order</label><input class="input" id="sp_order" type="number" value="${esc(f.display_order||0)}"></div>
+        <div class="field"><label>Internal note (private)</label><input class="input" id="sp_note" value="${esc(f.note||'')}" placeholder="type / contact person…"></div>
       </div>
-      <div class="field"><label>Internal note (private)</label><input class="input" id="sp_note" value="${esc(f.note||'')}" placeholder="type / contact person…"></div>
       <button class="btn primary block" onclick="createSponsor()">${icon('check')} Add sponsor</button>
     </div>
     <div class="card" style="overflow:auto">
@@ -1417,7 +1416,7 @@ async function createSponsor(){
   else if(f.scope==='panchayat'){if(!f.panchayat_name){toast('Pick a panchayat',true);return;}scope_value=f.panchayat_name;scope_code=f.panchayat_code||null;}
   const payload={exam_id:state.exam.exam_id,name:f.name,tier:f.tier||'silver',scope:f.scope||'program',
     scope_value:scope_value,scope_code:scope_code,logo_url:f.logo_url||null,website:f.website||null,blurb:f.blurb||null,
-    amount:f.amount?Number(f.amount):null,note:f.note||null,display_order:f.display_order?Number(f.display_order):0,active:true};
+    note:f.note||null,display_order:f.display_order?Number(f.display_order):0,active:true};
   toast('Adding sponsor…');
   try{await api('/api/admin/sponsors',{method:'POST',body:payload,auth:true});
     state.admin.sponsorForm={tier:'silver',scope:'program'};state.admin.sponsors=null;loadSponsors();
