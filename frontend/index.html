@@ -197,6 +197,25 @@
     .row2{grid-template-columns:1fr}.hero-meta{gap:18px}
     .hero{padding:36px 0 28px}
   }
+  /* Sponsors */
+  .sponsors{display:flex;flex-direction:column;gap:24px}
+  .sp-tier .tl{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+  .sp-tier .tl .dot{width:11px;height:11px;border-radius:50%}
+  .sp-tier.platinum .dot{background:linear-gradient(135deg,#9fb0c9,#6c7f9e)}
+  .sp-tier.gold .dot{background:var(--marigold)}
+  .sp-tier.silver .dot{background:#b6bcc7}
+  .sp-grid{display:grid;gap:12px}
+  .sp-grid.platinum{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
+  .sp-grid.gold{grid-template-columns:repeat(auto-fill,minmax(165px,1fr))}
+  .sp-grid.silver{grid-template-columns:repeat(auto-fill,minmax(135px,1fr))}
+  .sp-card{background:#fff;border:1px solid var(--line);border-radius:13px;padding:16px 14px;display:flex;flex-direction:column;align-items:center;gap:9px;text-align:center;box-shadow:var(--shadow)}
+  .sp-card.platinum{border-color:#c9d3e2}
+  .sp-card.gold{border-color:#f3d488}
+  .sp-card img{max-width:100%;max-height:56px;object-fit:contain}
+  .sp-card .ph{width:100%;height:52px;border-radius:8px;background:rgba(26,46,92,.06);display:grid;place-items:center;font-family:Fraunces;font-weight:600;color:var(--indigo);font-size:22px}
+  .sp-card .nm{font-weight:600;font-size:14px;color:var(--ink);line-height:1.2}
+  .sp-card .sc{font-size:11px;color:var(--muted)}
+  .sp-thumb{width:40px;height:40px;border-radius:8px;object-fit:contain;background:#faf7f0;border:1px solid var(--line)}
   /* Sign-in call-to-action box (make the Google button obviously the next step). */
   .signin-cta{border:1.5px dashed var(--marigold);background:linear-gradient(180deg,#fffaf0,#fff);border-radius:14px;padding:18px 16px;text-align:center}
   .signin-cta .lead{font-weight:700;color:var(--indigo);font-size:15px;margin:0 0 3px}
@@ -235,8 +254,9 @@ const state={
   lookup:{result:null, error:null},
   student:{data:null, admit:null, error:null},
   admit:{data:null},
+  sponsors:null,
   leaderboard:{cls:9, scope:"district", value:null, rows:null},
-  admin:{page:"overview", examId:null, regs:null, results:null, marksOut:null, centers:null, centerForm:{}, exams:null, settings:null, studentDetail:null, filters:{cls:"all",district:"all"}},
+  admin:{page:"overview", examId:null, regs:null, results:null, marksOut:null, centers:null, centerForm:{}, exams:null, sponsors:null, sponsorForm:{tier:"silver",scope:"program"}, settings:null, studentDetail:null, filters:{cls:"all",district:"all"}},
 };
 
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
@@ -294,7 +314,32 @@ async function boot(){
     state.exams=exams||[];
     state.exam=state.exams.find(e=>e.status==='open')||state.exams.find(e=>e.status==='completed')||state.exams[0]||null;
   }catch(e){toast('Could not load exam data: '+e.message,true);}
+  loadSponsors();
   state.ready=true;render();
+}
+async function loadSponsors(){
+  if(!state.exam){state.sponsors=[];return;}
+  try{state.sponsors=await api('/api/sponsors?exam_id='+encodeURIComponent(state.exam.exam_id));}
+  catch(e){state.sponsors=[];}
+  render();
+}
+// Homepage sponsor wall — grouped by tier, hidden when there are none.
+function sponsorWall(){
+  const list=state.sponsors;if(!list||!list.length)return '';
+  const tiers=[['platinum','Platinum'],['gold','Gold'],['silver','Silver']];
+  const scopeLabel=s=>s.scope&&s.scope!=='program'?`${esc(s.scope_value)} ${s.scope.charAt(0).toUpperCase()+s.scope.slice(1)}`:'Program partner';
+  const card=s=>`<div class="sp-card ${esc(s.tier)}">
+    ${s.logo_url?`<img src="${esc(s.logo_url)}" alt="${esc(s.name)}">`:`<div class="ph">${esc((s.name||'?')[0])}</div>`}
+    <div class="nm">${s.website?`<a href="${esc(s.website)}" target="_blank" rel="noopener" style="text-decoration:none">${esc(s.name)}</a>`:esc(s.name)}</div>
+    <div class="sc">${scopeLabel(s)}${s.blurb?' · '+esc(s.blurb):''}</div></div>`;
+  const groups=tiers.map(([t,label])=>{const rows=list.filter(s=>s.tier===t);if(!rows.length)return '';
+    return `<div class="sp-tier ${t}"><div class="tl"><span class="dot"></span>${label}</div>
+      <div class="sp-grid ${t}">${rows.map(card).join('')}</div></div>`;}).join('');
+  return `<section class="band tint"><div class="wrap">
+    <div class="sec-head"><span class="eyebrow">Made possible by</span><h2>Our sponsors</h2>
+      <p>Sponsors fund the prize pool and are celebrated at the prize distribution. They have <b>no access to and no influence on</b> registrations, marks, or ranks — results are computed purely on marks.</p></div>
+    <div class="sponsors">${groups}</div>
+  </div></section>`;
 }
 // Re-fetch exams+config after an admin toggles demo visibility.
 async function refreshExams(){
@@ -432,7 +477,8 @@ function home(){
         </div>
       </div>
     </div>
-  </div></section>`);
+  </div></section>
+  ${sponsorWall()}`);
 }
 
 /* ============================================================
@@ -879,11 +925,12 @@ function admin(){
         ${signinCTA('Sign in with Google','Admin access is checked on the server.')}</div></div></section>`;
   }
   const p=state.admin.page;
-  const nav=[["overview","Overview","chart"],["exams","Exams","book"],["registrations","Registrations","user"],["centers","Exam centres","book"],["marks","Upload marks","dl"],["results","Results & slices","chart"]];
+  const nav=[["overview","Overview","chart"],["exams","Exams","book"],["registrations","Registrations","user"],["centers","Exam centres","book"],["sponsors","Sponsors","user"],["marks","Upload marks","dl"],["results","Results & slices","chart"]];
   let main='';
   if(p==='overview')main=adminOverview();else if(p==='registrations')main=adminRegs();
   else if(p==='exams')main=adminExams();
   else if(p==='centers')main=adminCenters();
+  else if(p==='sponsors')main=adminSponsors();
   else if(p==='marks')main=adminMarks();else if(p==='results')main=adminResults();
   return `
   <header class="top"><div class="wrap">
@@ -1252,6 +1299,120 @@ async function setExamStatus(id,status){
 async function toggleExamPublished(id,pub){
   try{await api('/api/admin/exams/'+encodeURIComponent(id),{method:'PATCH',body:{results_published:pub},auth:true});
     state.admin.exams=null;await refreshExams();toast(pub?'Marked published':'Unpublished');render();}
+  catch(e){toast(e.message,true);}
+}
+
+/* ---------- admin: sponsors ---------- */
+async function loadAdminSponsors(){
+  if(!state.exam){state.admin.sponsors=[];render();return;}
+  try{state.admin.sponsors=await api('/api/admin/sponsors?exam_id='+encodeURIComponent(state.exam.exam_id),{auth:true});}
+  catch(e){state.admin.sponsors=[];toast(e.message,true);}render();
+}
+function spSnap(){const f=state.admin.sponsorForm;
+  [['sp_name','name'],['sp_web','website'],['sp_blurb','blurb'],['sp_amount','amount'],['sp_note','note'],['sp_order','display_order']]
+    .forEach(([id,k])=>{const el=document.getElementById(id);if(el)f[k]=el.value.trim();});}
+function spSet(k,v){spSnap();const f=state.admin.sponsorForm;f[k]=v;
+  if(k==='scope'){f.district='';f.block='';f.panchayat_code='';f.panchayat_name='';}
+  if(k==='district'){f.block='';f.panchayat_code='';f.panchayat_name='';}
+  if(k==='block'){f.panchayat_code='';f.panchayat_name='';}
+  render();}
+function spSetPan(code){spSnap();const f=state.admin.sponsorForm;const list=state.panchayats[panKey(f.district,f.block)]||[];
+  const p=list.find(x=>x.panchayat_code===code);f.panchayat_code=code;f.panchayat_name=p?p.panchayat_name:'';render();}
+function spLogoPick(input){
+  const file=input.files&&input.files[0];if(!file)return;
+  if(file.size>2000000){toast('Image too large (max 2 MB)',true);return;}
+  const r=new FileReader();
+  r.onload=async()=>{spSnap();const b64=String(r.result).split(',')[1];
+    toast('Uploading logo…');
+    try{const res=await api('/api/admin/sponsors/logo',{method:'POST',body:{content_type:file.type,data:b64},auth:true});
+      state.admin.sponsorForm.logo_url=res.logo_url;toast('Logo uploaded ✓');render();}
+    catch(e){toast(e.message,true);}};
+  r.readAsDataURL(file);
+}
+function adminSponsors(){
+  if(!state.exam)return `<p class="muted">No exam configured — create one under Exams first.</p>`;
+  if(state.geo===null){loadLocationData();return `<p><span class="spin"></span> Loading…</p>`;}
+  if(state.admin.sponsors===null){loadAdminSponsors();return `<p><span class="spin"></span> Loading sponsors…</p>`;}
+  const f=state.admin.sponsorForm,districts=(state.geo.districts)||[];
+  const distObj=districts.find(x=>x.district_name===f.district);
+  const needGeo=f.scope&&f.scope!=='program';
+  const distSel=needGeo?`<div class="field"><label>District <span class="req">*</span></label><select class="input" onchange="spSet('district',this.value)"><option value="">Select district</option>${districts.map(x=>`<option ${f.district===x.district_name?'selected':''}>${esc(x.district_name)}</option>`).join('')}</select></div>`:'';
+  const needBlock=f.scope==='block'||f.scope==='panchayat';
+  let blockSel='';
+  if(needBlock&&distObj)blockSel=`<div class="field"><label>Block <span class="req">*</span></label><select class="input" onchange="spSet('block',this.value)"><option value="">Select block</option>${distObj.blocks.map(b=>`<option ${f.block===b.block_name?'selected':''}>${esc(b.block_name)}</option>`).join('')}</select></div>`;
+  let panSel='';
+  if(f.scope==='panchayat'&&f.district&&f.block){
+    const k=panKey(f.district,f.block),list=state.panchayats[k];
+    if(list===undefined){loadPanchayats(f.district,f.block);panSel=`<div class="field"><label>Panchayat <span class="req">*</span></label><select class="input" disabled><option>Loading…</option></select></div>`;}
+    else panSel=`<div class="field"><label>Panchayat <span class="req">*</span></label><select class="input" onchange="spSetPan(this.value)"><option value="">Select panchayat</option>${(list||[]).map(p=>`<option value="${esc(p.panchayat_code)}" ${f.panchayat_code===p.panchayat_code?'selected':''}>${esc(p.panchayat_name)}</option>`).join('')}</select></div>`;
+  }
+  const cs=state.admin.sponsors;
+  const tierBadge=t=>`<span class="tag ${t==='platinum'?'open':t==='gold'?'draft':'closed'}" style="text-transform:capitalize">${esc(t)}</span>`;
+  const scopeTxt=s=>s.scope==='program'?'Program':`${esc(s.scope_value||'')} (${esc(s.scope)})`;
+  const rows=cs.length?cs.map(s=>`<tr>
+    <td>${s.logo_url?`<img class="sp-thumb" src="${esc(s.logo_url)}" alt="">`:'<div class="sp-thumb" style="display:grid;place-items:center;font-weight:700;color:var(--indigo)">'+esc((s.name||'?')[0])+'</div>'}</td>
+    <td style="font-weight:600">${esc(s.name)}${s.amount?`<div class="muted" style="font-size:12px;font-weight:400">₹${esc(s.amount)}</div>`:''}</td>
+    <td>${tierBadge(s.tier)}</td>
+    <td class="muted" style="font-size:13px">${scopeTxt(s)}</td>
+    <td><a onclick="toggleSponsor('${esc(s.sponsor_id)}',${s.active?'false':'true'})" style="color:var(--indigo);cursor:pointer;font-weight:600;font-size:13px">${s.active?'Hide':'Show'}</a></td>
+    <td><a onclick="deleteSponsor('${esc(s.sponsor_id)}','${esc(s.name)}')" style="color:var(--danger);cursor:pointer;font-weight:600;font-size:13px">Delete</a></td>
+  </tr>`).join(''):'<tr><td colspan="6" class="muted center" style="padding:24px">No sponsors yet.</td></tr>';
+  return `<h2 style="font-size:26px;color:var(--indigo);margin-bottom:4px">Sponsors</h2>
+  <p class="muted" style="margin:0 0 20px">For <b>${esc(state.exam.name)}</b>. Money is pooled; scope controls recognition only. Amount &amp; notes stay private (never on the public wall).</p>
+  <div class="grid2" style="align-items:start">
+    <div class="card pad">
+      <h4 style="font-size:16px;margin-bottom:14px">Add a sponsor</h4>
+      <div class="field"><label>Name <span class="req">*</span></label><input class="input" id="sp_name" value="${esc(f.name||'')}" placeholder="e.g. Sharma Sweets / Rasalpur High School"></div>
+      <div class="field"><label>Logo</label>
+        <div style="display:flex;align-items:center;gap:12px">
+          ${f.logo_url?`<img class="sp-thumb" src="${esc(f.logo_url)}" alt="">`:'<div class="sp-thumb" style="display:grid;place-items:center;color:var(--muted)">?</div>'}
+          <input type="file" accept="image/*" onchange="spLogoPick(this)" style="font-size:13px">
+        </div><div class="hint">PNG/JPG/WebP/SVG, up to 2 MB.</div></div>
+      <div class="row2">
+        <div class="field"><label>Tier</label><select class="input" onchange="spSet('tier',this.value)">${['platinum','gold','silver'].map(t=>`<option value="${t}" ${f.tier===t?'selected':''} style="text-transform:capitalize">${t}</option>`).join('')}</select></div>
+        <div class="field"><label>Scope</label><select class="input" onchange="spSet('scope',this.value)">${[['program','Program (whole exam)'],['district','District'],['block','Block'],['panchayat','Panchayat']].map(([v,l])=>`<option value="${v}" ${f.scope===v?'selected':''}>${l}</option>`).join('')}</select></div>
+      </div>
+      ${distSel}${blockSel}${panSel}
+      <div class="field"><label>Website (optional)</label><input class="input" id="sp_web" value="${esc(f.website||'')}" placeholder="https://…"></div>
+      <div class="field"><label>Short blurb (optional, shown on wall)</label><input class="input" id="sp_blurb" value="${esc(f.blurb||'')}" placeholder="e.g. Sweets & Namkeen since 1985"></div>
+      <div class="row2">
+        <div class="field"><label>Amount ₹ (private)</label><input class="input" id="sp_amount" type="number" value="${esc(f.amount||'')}"></div>
+        <div class="field"><label>Display order</label><input class="input" id="sp_order" type="number" value="${esc(f.display_order||0)}"></div>
+      </div>
+      <div class="field"><label>Internal note (private)</label><input class="input" id="sp_note" value="${esc(f.note||'')}" placeholder="type / contact person…"></div>
+      <button class="btn primary block" onclick="createSponsor()">${icon('check')} Add sponsor</button>
+    </div>
+    <div class="card" style="overflow:auto">
+      <table><thead><tr><th>Logo</th><th>Name</th><th>Tier</th><th>Scope</th><th>Visible</th><th></th></tr></thead>
+      <tbody>${rows}</tbody></table>
+    </div>
+  </div>`;
+}
+async function createSponsor(){
+  spSnap();const f=state.admin.sponsorForm;
+  if(!f.name){toast('Enter a sponsor name',true);return;}
+  let scope_value=null,scope_code=null;
+  if(f.scope==='district'){if(!f.district){toast('Pick a district',true);return;}scope_value=f.district;const d=(state.geo.districts||[]).find(x=>x.district_name===f.district);scope_code=d?d.district_code:null;}
+  else if(f.scope==='block'){if(!f.block){toast('Pick a block',true);return;}scope_value=f.block;const d=(state.geo.districts||[]).find(x=>x.district_name===f.district);const b=d&&d.blocks.find(x=>x.block_name===f.block);scope_code=b?b.block_code:null;}
+  else if(f.scope==='panchayat'){if(!f.panchayat_name){toast('Pick a panchayat',true);return;}scope_value=f.panchayat_name;scope_code=f.panchayat_code||null;}
+  const payload={exam_id:state.exam.exam_id,name:f.name,tier:f.tier||'silver',scope:f.scope||'program',
+    scope_value:scope_value,scope_code:scope_code,logo_url:f.logo_url||null,website:f.website||null,blurb:f.blurb||null,
+    amount:f.amount?Number(f.amount):null,note:f.note||null,display_order:f.display_order?Number(f.display_order):0,active:true};
+  toast('Adding sponsor…');
+  try{await api('/api/admin/sponsors',{method:'POST',body:payload,auth:true});
+    state.admin.sponsorForm={tier:'silver',scope:'program'};state.admin.sponsors=null;loadSponsors();
+    toast('Sponsor added ✓');render();}
+  catch(e){toast(e.message,true);}
+}
+async function toggleSponsor(id,active){
+  try{await api('/api/admin/sponsors/'+encodeURIComponent(id),{method:'PATCH',body:{active:active},auth:true});
+    state.admin.sponsors=null;loadSponsors();toast('Updated ✓');render();}
+  catch(e){toast(e.message,true);}
+}
+async function deleteSponsor(id,name){
+  if(!confirm('Delete sponsor "'+name+'"? This cannot be undone.'))return;
+  try{await api('/api/admin/sponsors/'+encodeURIComponent(id),{method:'DELETE',auth:true});
+    state.admin.sponsors=null;loadSponsors();toast('Deleted');render();}
   catch(e){toast(e.message,true);}
 }
 

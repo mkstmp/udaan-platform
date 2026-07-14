@@ -86,6 +86,60 @@ def update_exam(exam_id, patch):
     return {"exam_id": exam_id, "updated": True}
 
 
+# ---- sponsors ---------------------------------------------------------------
+
+# Public-safe sponsor fields (NO amount / note / contact).
+_SPONSOR_PUBLIC = ("sponsor_id", "name", "tier", "scope", "scope_value",
+                   "logo_url", "website", "blurb", "display_order")
+
+
+def create_sponsor(data):
+    ref = _db.collection("sponsors").document()
+    ref.set({**data, "sponsor_id": ref.id,
+             "created_at": firestore.SERVER_TIMESTAMP,
+             "updated_at": firestore.SERVER_TIMESTAMP})
+    return {"sponsor_id": ref.id}
+
+
+def _sponsor_sort(rows):
+    order = {"platinum": 0, "gold": 1, "silver": 2}
+    rows.sort(key=lambda s: (order.get(s.get("tier"), 9),
+                             s.get("display_order", 0), s.get("name", "")))
+    return rows
+
+
+def list_sponsors_admin(exam_id):
+    rows = [d.to_dict() for d in
+            _db.collection("sponsors").where("exam_id", "==", exam_id).stream()]
+    return _sponsor_sort(rows)
+
+
+def list_sponsors_public(exam_id):
+    rows = []
+    for d in _db.collection("sponsors").where("exam_id", "==", exam_id).stream():
+        s = d.to_dict()
+        if not s.get("active", True):
+            continue
+        rows.append({k: s.get(k) for k in _SPONSOR_PUBLIC})
+    return _sponsor_sort(rows)
+
+
+def update_sponsor(sponsor_id, patch):
+    ref = _db.collection("sponsors").document(sponsor_id)
+    if not ref.get().exists:
+        return None
+    ref.update({**patch, "updated_at": firestore.SERVER_TIMESTAMP})
+    return {"sponsor_id": sponsor_id, "updated": True}
+
+
+def delete_sponsor(sponsor_id):
+    ref = _db.collection("sponsors").document(sponsor_id)
+    if not ref.get().exists:
+        return None
+    ref.delete()
+    return {"sponsor_id": sponsor_id, "deleted": True}
+
+
 def get_settings():
     """App-wide settings (e.g. demo_visible). Defaults when the doc is absent."""
     d = _db.collection("settings").document("app").get()

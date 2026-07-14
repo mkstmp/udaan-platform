@@ -93,7 +93,16 @@
       "Bash(dig +short CNAME www.hariharexam.com)",
       "Bash(curl -s -o /dev/null -w \" GET https://www.hariharexam.com/ -> %{http_code}\\\\n\" --max-time 10 https://www.hariharexam.com/)",
       "Bash(dig +short A hariharexam.com)",
-      "Bash(git -c user.email=mukesh.sonepur@gmail.com -c user.name=Mukesh commit -q -m 'Docs: custom domain hariharexam.com is live; note OAuth origins to add *)"
+      "Bash(git -c user.email=mukesh.sonepur@gmail.com -c user.name=Mukesh commit -q -m 'Docs: custom domain hariharexam.com is live; note OAuth origins to add *)",
+      "Bash(curl -s -o /dev/null -w \"  https://www.hariharexam.com/ -> HTTP %{http_code}\\\\n\" --max-time 12 https://www.hariharexam.com/)",
+      "Bash(timeout 12 openssl s_client -servername www.hariharexam.com -connect www.hariharexam.com:443)",
+      "Bash(openssl x509 *)",
+      "Bash(curl -s -o /dev/null -w \" https://hariharexam.com/ -> HTTP %{http_code}\\\\n\" https://hariharexam.com/)",
+      "Bash(python3 -m py_compile backend/app/main.py backend/app/db.py backend/app/media.py)",
+      "Bash(curl -s __TRACKED_VAR__/api/sponsors?exam_id=udaan-2026-08-math)",
+      "Bash(curl -s -o /dev/null -w '  GET  /api/admin/sponsors -> %{http_code}\\\\n' __TRACKED_VAR__/api/admin/sponsors?exam_id=udaan-2026-08-math)",
+      "Bash(curl -s -o /dev/null -w '  POST /api/admin/sponsors/logo -> %{http_code}\\\\n' -X POST __TRACKED_VAR__/api/admin/sponsors/logo -H 'Content-Type: application/json' -d '{\"content_type\":\"image/png\",\"data\":\"x\"}')",
+      "Bash(git -c user.email=mukesh.sonepur@gmail.com -c user.name=Mukesh commit -q -m 'Sponsors Phase 1: admin management \\(with logo upload\\) + public tiered wall *)"
     ]
   }
 }

@@ -23,7 +23,9 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from typing import Optional
 
-from . import db, auth, ranking
+import base64
+
+from . import db, auth, ranking, media
 from .student_payloads import student_result_view, admit_card_view
 from .usernames import make_username
 
@@ -107,6 +109,12 @@ def list_sample_papers(exam_id: Optional[str] = None):
 def list_centers(exam_id: Optional[str] = None):
     """Public, PII-free centre list — powers the registration location picker."""
     return db.list_centers_public(exam_id)
+
+
+@app.get("/api/sponsors")
+def list_sponsors(exam_id: str):
+    """Public sponsor wall — allowlisted fields only (no amount/contact)."""
+    return db.list_sponsors_public(exam_id)
 
 
 # ----------------------------------------------------------------------------
@@ -333,6 +341,102 @@ def patch_center(center_id: str, payload: CenterPatch, admin=Depends(auth.requir
     res = db.update_center(center_id, patch)
     if not res:
         raise HTTPException(404, "Centre not found.")
+    return res
+
+
+# ----------------------------------------------------------------------------
+# SPONSORS (admin CRUD + logo upload; public read is /api/sponsors above)
+# ----------------------------------------------------------------------------
+_TIERS = {"platinum", "gold", "silver"}
+_SCOPES = {"program", "district", "block", "panchayat"}
+
+
+class LogoIn(BaseModel):
+    content_type: str
+    data: str  # base64 (data-URL prefix stripped by the client)
+
+
+class SponsorIn(BaseModel):
+    exam_id: str
+    name: str
+    tier: str = "silver"
+    scope: str = "program"
+    scope_value: Optional[str] = None
+    scope_code: Optional[str] = None
+    logo_url: Optional[str] = None
+    website: Optional[str] = None
+    blurb: Optional[str] = None
+    amount: Optional[float] = None      # PRIVATE
+    note: Optional[str] = None          # PRIVATE
+    display_order: int = 0
+    active: bool = True
+
+
+class SponsorPatch(BaseModel):
+    name: Optional[str] = None
+    tier: Optional[str] = None
+    scope: Optional[str] = None
+    scope_value: Optional[str] = None
+    scope_code: Optional[str] = None
+    logo_url: Optional[str] = None
+    website: Optional[str] = None
+    blurb: Optional[str] = None
+    amount: Optional[float] = None
+    note: Optional[str] = None
+    display_order: Optional[int] = None
+    active: Optional[bool] = None
+
+
+@app.post("/api/admin/sponsors/logo")
+def upload_sponsor_logo(payload: LogoIn, admin=Depends(auth.require_admin)):
+    """Upload a logo image (base64) → returns a public URL."""
+    if not media.is_supported(payload.content_type):
+        raise HTTPException(400, "Unsupported image type (use PNG/JPG/WebP/GIF/SVG).")
+    try:
+        raw = base64.b64decode(payload.data)
+    except Exception:
+        raise HTTPException(400, "Invalid image data.")
+    if len(raw) > 2_000_000:
+        raise HTTPException(400, "Image too large (max 2 MB).")
+    return {"logo_url": media.upload_logo(raw, payload.content_type)}
+
+
+@app.get("/api/admin/sponsors")
+def list_admin_sponsors(exam_id: str, admin=Depends(auth.require_admin)):
+    return db.list_sponsors_admin(exam_id)
+
+
+@app.post("/api/admin/sponsors")
+def create_sponsor(payload: SponsorIn, admin=Depends(auth.require_admin)):
+    if payload.tier not in _TIERS:
+        raise HTTPException(400, "Invalid tier.")
+    if payload.scope not in _SCOPES:
+        raise HTTPException(400, "Invalid scope.")
+    if payload.scope != "program" and not payload.scope_value:
+        raise HTTPException(400, "Pick the district/block/panchayat for this scope.")
+    return db.create_sponsor(payload.model_dump())
+
+
+@app.patch("/api/admin/sponsors/{sponsor_id}")
+def patch_sponsor(sponsor_id: str, payload: SponsorPatch, admin=Depends(auth.require_admin)):
+    patch = {k: v for k, v in payload.model_dump().items() if v is not None}
+    if "tier" in patch and patch["tier"] not in _TIERS:
+        raise HTTPException(400, "Invalid tier.")
+    if "scope" in patch and patch["scope"] not in _SCOPES:
+        raise HTTPException(400, "Invalid scope.")
+    if not patch:
+        raise HTTPException(400, "Nothing to update.")
+    res = db.update_sponsor(sponsor_id, patch)
+    if not res:
+        raise HTTPException(404, "Sponsor not found.")
+    return res
+
+
+@app.delete("/api/admin/sponsors/{sponsor_id}")
+def remove_sponsor(sponsor_id: str, admin=Depends(auth.require_admin)):
+    res = db.delete_sponsor(sponsor_id)
+    if not res:
+        raise HTTPException(404, "Sponsor not found.")
     return res
 
 
